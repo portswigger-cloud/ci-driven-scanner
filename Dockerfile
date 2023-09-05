@@ -11,9 +11,9 @@ RUN apt-get update \
     && add-apt-repository 'ppa:deadsnakes/ppa' \
     && apt-get install python3.10 python3.10-distutils -y \
     && apt-get clean autoclean \
-    && rm -rf /var/lib/{apt,dpkg,cache,log}/
+    && rm -rf /var/lib/{apt,dpkg,cache,log}
 
-RUN python3.10 -m pip install -U pip
+RUN python3.10 -m ensurepip --default-pip
 
 
 ENTRYPOINT ["python3.10", "/wrapper/main.py"]
