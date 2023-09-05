@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testsuites failures="2" name="Scan results" tests="7">
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/robots.txt" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="2" name="https://auth.management-prod.cloud.portswigger.com:443/web" tests="2">
+        <testcase name="TLS certificate">
+            <failure message="TLS certificate found at https://auth.management-prod.cloud.portswigger.com/" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Certain
+
+Host: https://auth.management-prod.cloud.portswigger.com
+
+Path: /
+
+
+Issue Detail
+The following problem was identified with the server's TLS certificate:
+- Certificate 3 in the certificate chain has expired.
+The server presented the following certificates:
+
+
+Server certificate
+Issued to: auth.management-prod.cloud.portswigger.com, *.auth.management-prod.cloud.portswigger.com 
+Issued by: R3 
+Valid from: Wed Jul 19 16:42:12 UTC 2023 
+Valid to: Tue Oct 17 16:42:11 UTC 2023 
+
+Certificate chain #1
+Issued to: R3 
+Issued by: ISRG Root X1 
+Valid from: Fri Sep 04 00:00:00 UTC 2020 
+Valid to: Mon Sep 15 16:00:00 UTC 2025 
+
+Certificate chain #2
+Issued to: ISRG Root X1 
+Issued by: DST Root CA X3 
+Valid from: Wed Jan 20 19:14:03 UTC 2021 
+Valid to: Mon Sep 30 18:14:03 UTC 2024 
+
+Certificate chain #3
+Issued to: DST Root CA X3 
+Issued by: DST Root CA X3 
+Valid from: Sat Sep 30 21:12:19 UTC 2000 
+Valid to: Thu Sep 30 14:01:15 UTC 2021 
+
+
+Issue Background
+TLS (or SSL) helps to protect the confidentiality and integrity of information in transit between the browser and server, and to provide authentication of the server's identity. To serve this purpose, the server must present an TLS certificate that is valid for the server's hostname, is issued by a trusted authority and is valid for the current date. If any one of these requirements is not met, TLS connections to the server will not provide the full protection for which TLS is designed.
+
+It should be noted that various attacks exist against TLS in general, and in the context of HTTPS web connections in particular. It may be possible for a determined and suitably-positioned attacker to compromise TLS connections without user detection even when a valid TLS certificate is used. 
+
+
+References
+
+- SSL/TLS Configuration Guide (https://wiki.mozilla.org/Security/Server_Side_TLS)
+
+
+Vulnerability Classifications
+
+- CWE-295: Improper Certificate Validation (https://cwe.mitre.org/data/definitions/295.html)
+
+- CWE-326: Inadequate Encryption Strength (https://cwe.mitre.org/data/definitions/326.html)
+
+- CWE-327: Use of a Broken or Risky Cryptographic Algorithm (https://cwe.mitre.org/data/definitions/327.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Hidden HTTP 2">
+            <failure message="Hidden HTTP 2 found at https://auth.management-prod.cloud.portswigger.com/web" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://auth.management-prod.cloud.portswigger.com
+
+Path: /web
+
+
+Issue Detail
+The server did not list h2 in the ALPN field during the TLS handshake. However, when a HTTP/2 request was sent over the TLS connection, a HTTP/2 response was received. This indicates that the server does support HTTP/2, despite not advertising it.
+
+Issue Background
+
+Clients that support HTTP/2 typically default to HTTP/1.1, and only use HTTP/2 if the server advertises support for it via the ALPN field during the TLS handshake.
+
+
+
+Some misconfigured servers that do support HTTP/2 fail to advertise this, making it appear as though they only support HTTP/1.1. This can lead to people overlooking viable HTTP/2 attack surface and missing associated vulnerabilities, such as HTTP/2 downgrade-based request smuggling.
+
+
+
+Issue Remediation
+
+If you want to use HTTP/2, make sure the server is configured to advertise it correctly. Otherwise, consider fully disabling it server-side to reduce unnecessary attack surface.
+
+
+
+Evidence
+Request:
+GET /web HTTP/2
+Host: auth.management-prod.cloud.portswigger.com
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://auth.management-prod.cloud.portswigger.com/
+
+
+
+Response:
+HTTP/2 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Content-Length: 51
+Date: Fri, 01 Sep 2023 12:18:47 GMT
+
+request header "Connection" is not valid in HTTP/2
+
+
+
+
+References
+    
+- HTTP/2: The Sequel is Always Worse (https://portswigger.net/research/http2)
+
+
+
+Vulnerability Classifications
+    
+- CWE-912: Hidden Functionality (https://cwe.mitre.org/data/definitions/912.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/web/app/index-0da50db0.css" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/web/app/index-a642dc56.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/web/config.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+</testsuites>
