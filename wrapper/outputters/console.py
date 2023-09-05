@@ -28,15 +28,19 @@ def output_summary(target_issues: list) -> None:
                 f"{FAIL} - {len(target.issues)} issues detected at: {target.url} ",
             ]
             for issue in target.issues:
-                failed_message_list.extend(
-                    [
-                        f"     {get_severity_emoji(issue.severity)} - {issue.severity} - {issue.name}:",
-                        "",
-                        f"       Description: {issue.description}",
-                        f"       Confidence: {issue.confidence}",
-                        "",
-                    ]
-                )
+                failed_message = [
+                    f"     {get_severity_emoji(issue.severity)} - {issue.severity} - {issue.name}:",
+                    "",
+                    f"       Description: {issue.description}",
+                    f"       Confidence: {issue.confidence}",
+                ]
+                if issue.references:
+                    failed_message.append("       References:")
+                    for reference in issue.references:
+                        failed_message.append(f"           {reference}")
+
+                failed_message.append("")
+                failed_message_list.extend(failed_message)
 
             failed_targets.append("\n".join(failed_message_list))
 
