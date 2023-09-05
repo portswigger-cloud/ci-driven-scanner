@@ -12,7 +12,7 @@ on:
       - main
 
 jobs:
-  release-continer-image:
+  release-container-image:
     runs-on: ubuntu-latest
 
     permissions:
