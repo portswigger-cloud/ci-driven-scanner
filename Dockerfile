@@ -13,7 +13,8 @@ RUN apt-get update \
     && apt-get clean autoclean \
     && rm -rf /var/lib/{apt,dpkg,cache,log}
 
-RUN python3.11 -m ensurepip --default-pip
+RUN python3.11 -m ensurepip --default-pip \
+    && python3.11 -m pip install -r /wrapper/requirements.txt
 
 
 ENTRYPOINT ["python3.10", "/wrapper/main.py"]
