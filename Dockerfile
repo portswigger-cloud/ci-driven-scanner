@@ -9,7 +9,7 @@ COPY ./wrapper /wrapper
 RUN apt-get update \
     && apt-get install software-properties-common -y \
     && add-apt-repository 'ppa:deadsnakes/ppa' \
-    && apt-get install python3.11 -y \
+    && apt-get install python3.11 python3.11-pip -y \
     && apt-get clean autoclean \
     && rm -rf /var/lib/{apt,dpkg,cache,log}/ \
     && python3.11 -m pip install -r /wrapper/requirements.txt
