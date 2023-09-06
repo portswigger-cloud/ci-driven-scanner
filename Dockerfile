@@ -17,4 +17,4 @@ RUN python3.11 -m ensurepip --default-pip \
     && python3.11 -m pip install -r /wrapper/requirements.txt
 
 
-ENTRYPOINT ["python3.10", "/wrapper/main.py"]
+ENTRYPOINT ["python3.11", "/wrapper/main.py"]
