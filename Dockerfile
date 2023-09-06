@@ -16,5 +16,6 @@ RUN apt-get update \
 RUN python3.11 -m ensurepip --default-pip \
     && python3.11 -m pip install -r /wrapper/requirements.txt
 
+ENV PYTHONUNBUFFERED 1
 
 ENTRYPOINT ["python3.11", "/wrapper/main.py"]
