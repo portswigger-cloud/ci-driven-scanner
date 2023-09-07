@@ -99,7 +99,7 @@ def output_issue_counts(target_issues: list) -> None:
 
         if crit_or_high_count > 0:
             print(
-                f"::error ::{crit_or_high_count} critical or high seeverity issues detect"
+                f"::error ::{crit_or_high_count} critical or high seeverity issues detected"
             )
 
         if medium_count > 0:
