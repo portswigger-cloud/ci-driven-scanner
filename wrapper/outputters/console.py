@@ -93,4 +93,16 @@ def output_issue_counts(target_issues: list) -> None:
 
     if total_issues > 0 and os.environ.get("GITHUB_ACTIONS", False):
         print("")
-        print(f"::warning ::{total_issues} issues detected")
+
+        crit_or_high_count = issue_counts["critical"] + issue_counts["high"]
+        medium_count = issue_counts["medium"]
+
+        if crit_or_high_count > 0:
+            print(
+                f"::error ::{crit_or_high_count} critical or high seeverity issues detect"
+            )
+
+        if medium_count > 0:
+            print(f"::warning ::{medium_count} medium severity issues detected")
+
+        print(f"::notice ::{total_issues} total issues detected")
