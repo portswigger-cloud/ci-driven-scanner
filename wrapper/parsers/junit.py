@@ -22,6 +22,8 @@ class Issue:
     detail: str
     background: str = None
     remediation: str = None
+    remediation_detail: str = None
+    remediation_background: str = None
     evidence: Evidence = None
     references: list[str] = field(default_factory=list)
     vulnerability_classifications: list[str] = field(default_factory=list)
@@ -63,6 +65,12 @@ def parse_url_issues_from_junit(junit_file_path: str) -> list[Target]:
                             remediation=parse_message_for_field(
                                 "Issue Remediation", result.text
                             ),
+                            remediation_detail=parse_message_for_field(
+                                "Remediation Detail", result.text
+                            ),
+                            remediation_background=parse_message_for_field(
+                                "Remediation Background", result.text
+                            ),
                             evidence=parse_message_for_field("Evidence", result.text),
                             references=parse_message_for_field(
                                 "References", result.text
@@ -83,7 +91,13 @@ def parse_message_for_field(field: str, message: str):
         "inline": ["Severity", "Confidence", "Host", "Path"],
         "list": ["References", "Vulnerability Classifications"],
         "evidence": ["Evidence"],
-        "multiline": ["Issue Detail", "Issue Background", "Issue Remediation"],
+        "multiline": [
+            "Issue Detail",
+            "Issue Background",
+            "Issue Remediation",
+            "Remediation Detail",
+            "Remediation Background",
+        ],
         "footer": [
             "Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues"
         ],
