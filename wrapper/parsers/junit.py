@@ -24,7 +24,7 @@ class Issue:
     remediation: str = None
     remediation_detail: str = None
     remediation_background: str = None
-    evidence: Evidence = None
+    evidence: list[Evidence] = None
     references: list[str] = field(default_factory=list)
     vulnerability_classifications: list[str] = field(default_factory=list)
 
@@ -128,6 +128,7 @@ def parse_message_for_field(field: str, message: str):
         # Evidence fields contain a request and a response
         if field in parse_fields["evidence"]:
             evidence_content = "\n".join(result_list).strip()
+            evidence_list = []
             request = False
             request_list = []
 
@@ -149,10 +150,17 @@ def parse_message_for_field(field: str, message: str):
                 elif response:
                     response_list.append(evidence_line)
 
-            return Evidence(
-                request="\n".join(request_list).strip(),
-                response="\n".join(response_list).strip(),
-            )
+            request_str = "\n".join(request_list).strip()
+            response_str = "\n".join(response_list).strip()
+            if request_str and response_str:
+                evidence_list.append(
+                    Evidence(
+                        request=response,
+                        response=response_str,
+                    )
+                )
+
+                return evidence_list
 
         # List fields should return a list of strings
         elif field in parse_fields["list"]:
