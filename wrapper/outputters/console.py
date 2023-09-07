@@ -52,3 +52,37 @@ def output_summary(target_issues: list) -> None:
     print("\n".join(successful_targets))
     if failed_targets:
         print("\n".join(failed_targets))
+
+
+def output_issue_counts(target_issues: list) -> None:
+    issue_counts = {
+        "info": 0,
+        "low": 0,
+        "medium": 0,
+        "high": 0,
+        "critical": 0,
+        "unknown": 0,
+    }
+
+    for target in target_issues:
+        if len(target.issues) > 0:
+            for issue in target.issues:
+                l_severity = issue.severity.lower()
+
+                match l_severity:
+                    case "info" | "low" | "medium" | "high" | "critical":
+                        issue_counts[l_severity] += 1
+                    case _:
+                        issue_counts["unknown"] += 1
+
+    issue_count_message = f"""Issue Count Summary:
+
+    Total issues : {sum(issue_counts.values())}
+
+        Critical : {issue_counts["critical"]}
+        High     : {issue_counts["high"]}
+        Medium   : {issue_counts["medium"]}
+        Low      : {issue_counts["low"]}
+        Info     : {issue_counts["info"]}
+        Unknown  : {issue_counts["unknown"]}"""
+    print(issue_count_message)
