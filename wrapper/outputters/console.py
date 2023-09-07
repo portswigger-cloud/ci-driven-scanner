@@ -1,3 +1,5 @@
+import os
+
 SUCCESS = "✅"
 FAIL = "❌"
 
@@ -75,9 +77,11 @@ def output_issue_counts(target_issues: list) -> None:
                     case _:
                         issue_counts["unknown"] += 1
 
+    total_issues = sum(issue_counts.values())
+
     issue_count_message = f"""Issue Count Summary:
 
-    Total issues : {sum(issue_counts.values())}
+    Total issues : {total_issues}
 
         Critical : {issue_counts["critical"]}
         High     : {issue_counts["high"]}
@@ -86,3 +90,7 @@ def output_issue_counts(target_issues: list) -> None:
         Info     : {issue_counts["info"]}
         Unknown  : {issue_counts["unknown"]}"""
     print(issue_count_message)
+
+    if total_issues > 0 and os.environ.get("GITHUB_ACTIONS", False):
+        print("")
+        print(f"::warning ::{total_issues} issues detected")
