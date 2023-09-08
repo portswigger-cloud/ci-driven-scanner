@@ -11,7 +11,7 @@ def get_severity_emoji(severity: str):
         case "low":
             return "🙈"
         case "medium":
-            return "🔔"
+            return "😱"
         case "high":
             return "🚨"
         case _:
@@ -94,7 +94,7 @@ def output_issue_counts(target_issues: list) -> None:
         medium_count = issue_counts["medium"]
 
         if high_count > 0:
-            print(f"::error ::{high_count} high seeverity issues detected")
+            print(f"::error ::{high_count} high severity issues detected")
 
         if medium_count > 0:
             print(f"::warning ::{medium_count} medium severity issues detected")

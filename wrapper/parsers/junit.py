@@ -12,6 +12,12 @@ class Evidence:
 
 
 @dataclass
+class CollaboratorInteraction:
+    message: str
+    evidence: Evidence
+
+
+@dataclass
 class Issue:
     name: str
     description: str
@@ -25,6 +31,7 @@ class Issue:
     remediation_detail: str = None
     remediation_background: str = None
     evidence: list[Evidence] = None
+    collaborator_interaction: CollaboratorInteraction = None
     static_analysis: str = None
     dynamic_analysis: str = None
     references: list[str] = field(default_factory=list)
@@ -74,11 +81,14 @@ def parse_url_issues_from_junit(junit_file_path: str) -> list[Target]:
                                 "Remediation Background", result.text
                             ),
                             evidence=parse_message_for_field("Evidence", result.text),
+                            collaborator_interaction=parse_message_for_field(
+                                "Collaborator HTTP interaction", result.text
+                            ),
                             static_analysis=parse_message_for_field(
-                                "Static Analysis", result.text
+                                "Static analysis", result.text
                             ),
                             dynamic_analysis=parse_message_for_field(
-                                "Dynamic Analysis", result.text
+                                "Dynamic analysis", result.text
                             ),
                             references=parse_message_for_field(
                                 "References", result.text
@@ -99,6 +109,7 @@ def parse_message_for_field(field: str, message: str):
         "inline": ["Severity", "Confidence", "Host", "Path"],
         "list": ["References", "Vulnerability Classifications"],
         "evidence": ["Evidence"],
+        "collaborator_interaction": ["Collaborator HTTP interaction"],
         "multiline": [
             "Issue Detail",
             "Issue Background",
@@ -187,6 +198,66 @@ def parse_message_for_field(field: str, message: str):
                     )
                 )
             return evidence_list
+
+        if field in parse_fields["collaborator_interaction"]:
+            collaborator_interaction_content = "\n".join(result_list).strip()
+            collaborator_interaction_message = True
+            collaborator_interaction_message_list = []
+
+            collaborator_interaction_request = False
+            collaborator_interaction_request_list = []
+
+            collaborator_interaction_response = False
+            collaborator_interaction_response_list = []
+
+            for (
+                collaborator_interaction_line
+            ) in collaborator_interaction_content.splitlines():
+                if collaborator_interaction_line.startswith("Request to collaborator"):
+                    collaborator_interaction_message = False
+                    collaborator_interaction_request = True
+                    collaborator_interaction_response = False
+                    continue
+                elif collaborator_interaction_line.startswith(
+                    "Response from collaborator"
+                ):
+                    collaborator_interaction_message = False
+                    collaborator_interaction_request = False
+                    collaborator_interaction_response = True
+                    continue
+
+                if collaborator_interaction_message:
+                    collaborator_interaction_message_list.append(
+                        collaborator_interaction_line
+                    )
+                elif collaborator_interaction_request:
+                    collaborator_interaction_request_list.append(
+                        collaborator_interaction_line
+                    )
+                elif collaborator_interaction_response:
+                    collaborator_interaction_response_list.append(
+                        collaborator_interaction_line
+                    )
+
+            collaborator_interaction_message_str = "\n".join(
+                collaborator_interaction_message_list
+            ).strip()
+
+            collaborator_interaction_request_str = "\n".join(
+                collaborator_interaction_request_list
+            ).strip()
+
+            collaborator_interaction_response_str = "\n".join(
+                collaborator_interaction_response_list
+            ).strip()
+
+            return CollaboratorInteraction(
+                message=collaborator_interaction_message_str,
+                evidence=Evidence(
+                    request=collaborator_interaction_request_str,
+                    response=collaborator_interaction_response_str,
+                ),
+            )
 
         # List fields should return a list of strings
         elif field in parse_fields["list"]:
