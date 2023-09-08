@@ -25,6 +25,8 @@ class Issue:
     remediation_detail: str = None
     remediation_background: str = None
     evidence: list[Evidence] = None
+    static_analysis: str = None
+    dynamic_analysis: str = None
     references: list[str] = field(default_factory=list)
     vulnerability_classifications: list[str] = field(default_factory=list)
 
@@ -72,6 +74,12 @@ def parse_url_issues_from_junit(junit_file_path: str) -> list[Target]:
                                 "Remediation Background", result.text
                             ),
                             evidence=parse_message_for_field("Evidence", result.text),
+                            static_analysis=parse_message_for_field(
+                                "Static Analysis", result.text
+                            ),
+                            dynamic_analysis=parse_message_for_field(
+                                "Dynamic Analysis", result.text
+                            ),
                             references=parse_message_for_field(
                                 "References", result.text
                             ),
@@ -97,6 +105,8 @@ def parse_message_for_field(field: str, message: str):
             "Issue Remediation",
             "Remediation Detail",
             "Remediation Background",
+            "Static analysis:",
+            "Dynamic analysis:",
         ],
         "footer": [
             "Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues"
@@ -125,7 +135,9 @@ def parse_message_for_field(field: str, message: str):
             if gather:
                 result_list.append(line)
 
-        # Evidence fields contain a request and a response
+        # Evidence fields contain (multiple) a request and a response - I'd like to refactor this,
+        # but once BurpXML output arrives it can probably go away :D
+
         if field in parse_fields["evidence"]:
             evidence_content = "\n".join(result_list).strip()
             evidence_list = []
@@ -135,14 +147,28 @@ def parse_message_for_field(field: str, message: str):
             response = False
             response_list = []
             for evidence_line in evidence_content.splitlines():
-                if evidence_line.startswith("Request:"):
+                if evidence_line.startswith("Request"):
                     request = True
                     response = False
                     continue
-                elif evidence_line.startswith("Response:"):
+                elif evidence_line.startswith("Response"):
                     request = False
                     response = True
                     continue
+
+                if request and len(response_list) > 0:
+                    request_str = "\n".join(request_list).strip()
+                    response_str = "\n".join(response_list).strip()
+
+                    if request_str and response_str:
+                        evidence_list.append(
+                            Evidence(
+                                request=request_str,
+                                response=response_str,
+                            )
+                        )
+                    request_list = []
+                    response_list = []
 
                 if request:
                     request_list.append(evidence_line)
@@ -152,15 +178,15 @@ def parse_message_for_field(field: str, message: str):
 
             request_str = "\n".join(request_list).strip()
             response_str = "\n".join(response_list).strip()
+
             if request_str and response_str:
                 evidence_list.append(
                     Evidence(
-                        request=response,
+                        request=request_str,
                         response=response_str,
                     )
                 )
-
-                return evidence_list
+            return evidence_list
 
         # List fields should return a list of strings
         elif field in parse_fields["list"]:

@@ -13,8 +13,6 @@ def get_severity_emoji(severity: str):
         case "medium":
             return "🔔"
         case "high":
-            return "😱"
-        case "critical":
             return "🚨"
         case _:
             return "🤔"
@@ -62,7 +60,6 @@ def output_issue_counts(target_issues: list) -> None:
         "low": 0,
         "medium": 0,
         "high": 0,
-        "critical": 0,
         "unknown": 0,
     }
 
@@ -72,7 +69,7 @@ def output_issue_counts(target_issues: list) -> None:
                 l_severity = issue.severity.lower()
 
                 match l_severity:
-                    case "info" | "low" | "medium" | "high" | "critical":
+                    case "info" | "low" | "medium" | "high":
                         issue_counts[l_severity] += 1
                     case _:
                         issue_counts["unknown"] += 1
@@ -83,7 +80,6 @@ def output_issue_counts(target_issues: list) -> None:
 
     Total issues : {total_issues}
 
-        Critical : {issue_counts["critical"]}
         High     : {issue_counts["high"]}
         Medium   : {issue_counts["medium"]}
         Low      : {issue_counts["low"]}
@@ -94,13 +90,11 @@ def output_issue_counts(target_issues: list) -> None:
     if total_issues > 0 and os.environ.get("GITHUB_ACTIONS", False):
         print("")
 
-        crit_or_high_count = issue_counts["critical"] + issue_counts["high"]
+        high_count = issue_counts["high"]
         medium_count = issue_counts["medium"]
 
-        if crit_or_high_count > 0:
-            print(
-                f"::error ::{crit_or_high_count} critical or high seeverity issues detected"
-            )
+        if high_count > 0:
+            print(f"::error ::{high_count} high seeverity issues detected")
 
         if medium_count > 0:
             print(f"::warning ::{medium_count} medium severity issues detected")
