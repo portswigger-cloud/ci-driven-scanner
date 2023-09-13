@@ -7,8 +7,6 @@
 #  Website: https://github.com/portswigger-cloud/ci-driven-scanner
 #  License: MIT License (see LICENSE file)
 
-import codecs
-
 from setuptools import setup
 
 dependencies = [
