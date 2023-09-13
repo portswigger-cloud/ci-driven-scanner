@@ -1,0 +1,33 @@
+[project]
+name = "burp_wrapper"
+version = "0.0.0"
+description = "A wrapper for the BurpSuite CI Scanning conatiner to provide interesting and useful outputs"
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "art >= 6.0, < 7",
+    "Jinja2 >= 3.1.2, < 4",
+    "junitparser >= 3.1.0, < 4",
+    "lxml >= 4.9.3, < 5",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/portswigger-cloud/ci-driven-scanner"
+
+[build-system]
+requires = ["setuptools>=40.8.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+burp_wrapper = ["**/resources/*"]
+
+[project.scripts]
+burp_wrapper = "burp_wrapper.main:cli"

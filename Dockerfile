@@ -11,13 +11,15 @@ RUN apt-get update \
     && apt-get clean autoclean \
     && rm -rf /var/lib/{apt,dpkg,cache,log}
 
-COPY ./burp_wrapper /app/burp_wrapper
-COPY ./setup.py /app/setup.py
+COPY ./src /app/src
+COPY ./README.md /app/README.md
+COPY ./LICENSE /app/LICENSE
+COPY ./pyproject.toml /app/pyproject.toml
 
 WORKDIR /app
 
 RUN python3.11 -m ensurepip --default-pip \
-    && python3.11 -m pip install -e .
+    && python3.11 -m pip install .
 
 ENV PYTHONUNBUFFERED 1
 
