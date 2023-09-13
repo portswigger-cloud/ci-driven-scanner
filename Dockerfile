@@ -17,7 +17,7 @@ COPY ./setup.py /app/setup.py
 WORKDIR /app
 
 RUN python3.11 -m ensurepip --default-pip \
-    && python3.11 -m pip install .
+    && python3.11 -m pip install -e .
 
 ENV PYTHONUNBUFFERED 1
 
