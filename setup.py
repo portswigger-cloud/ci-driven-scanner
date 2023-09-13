@@ -9,7 +9,7 @@
 
 import codecs
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 dependencies = [
     "art==6.0",
@@ -26,14 +26,14 @@ setup(
     author="Tim Birkett",
     author_email="tim.birkett@portswigger.net",
     description="A wrapper for the BurpSuite CI Scanning conatiner to provide interesting and useful outputs.",
-    packages=find_packages(exclude=["tests"]),
+    packages=["burp_wrapper"],
     include_package_data=True,
     zip_safe=False,
     platforms="any",
     install_requires=dependencies,
     entry_points={
         "console_scripts": [
-            "burp_wrapper = burp_wrapper.main:main",
+            "burp_wrapper = burp_wrapper.main:cli",
         ],
     },
     classifiers=[

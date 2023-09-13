@@ -43,7 +43,7 @@ def run_scan_initiator() -> int:
     return 42
 
 
-def main():
+def cli():
     print_header()
     exit_code = run_scan_initiator()
     print_page_break(leading_new_line=False)
@@ -65,4 +65,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    cli()
