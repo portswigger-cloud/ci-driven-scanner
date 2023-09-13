@@ -4,8 +4,6 @@ FROM public.ecr.aws/portswigger/enterprise-scan-container:${IMAGE_TAG}
 
 USER root
 
-COPY ./wrapper /wrapper
-
 RUN apt-get update \
     && apt-get install software-properties-common -y \
     && add-apt-repository 'ppa:deadsnakes/ppa' \
@@ -13,9 +11,14 @@ RUN apt-get update \
     && apt-get clean autoclean \
     && rm -rf /var/lib/{apt,dpkg,cache,log}
 
+COPY ./burp_wrapper /app/burp_wrapper
+COPY ./setup.py /app/setup.py
+
+WORKDIR /app
+
 RUN python3.11 -m ensurepip --default-pip \
-    && python3.11 -m pip install -r /wrapper/requirements.txt
+    && python3.11 -m pip install .
 
 ENV PYTHONUNBUFFERED 1
 
-ENTRYPOINT ["python3.11", "/wrapper/main.py"]
+ENTRYPOINT ["burp_wrapper"]

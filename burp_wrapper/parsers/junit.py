@@ -1,52 +1,16 @@
 import os
 import re
-from dataclasses import dataclass, field
+import sys
 
 from junitparser import JUnitXml
 
-
-@dataclass
-class Evidence:
-    request: str
-    response: str
-
-
-@dataclass
-class CollaboratorInteraction:
-    message: str
-    evidence: Evidence
-
-
-@dataclass
-class Issue:
-    name: str
-    description: str
-    severity: str
-    confidence: str
-    host: str
-    path: str
-    detail: str
-    background: str = None
-    remediation: str = None
-    remediation_detail: str = None
-    remediation_background: str = None
-    evidence: list[Evidence] = None
-    collaborator_interaction: CollaboratorInteraction = None
-    static_analysis: str = None
-    dynamic_analysis: str = None
-    references: list[str] = field(default_factory=list)
-    vulnerability_classifications: list[str] = field(default_factory=list)
-
-
-@dataclass
-class Target:
-    url: str
-    issues: list[Issue] = field(default_factory=list)
+from burp_wrapper.models import CollaboratorInteraction, Evidence, Issue, Target
 
 
 def parse_url_issues_from_junit(junit_file_path: str) -> list[Target]:
     if not os.path.exists(junit_file_path):
-        print(f"WARNING: Unable to find JUnit report file at: {junit_file_path}")
+        print(f"ERROR: Unable to find JUnit report file at: {junit_file_path}")
+        sys.exit(42)
 
     url_issue_list: list[Target] = []
 
@@ -57,47 +21,76 @@ def parse_url_issues_from_junit(junit_file_path: str) -> list[Target]:
         if int(url_test_suite.failures) > 0:
             for url_test_case in url_test_suite:
                 for result in url_test_case.result:
-                    url_test_issues.issues.append(
-                        Issue(
-                            name=url_test_case.name,
-                            description=result.message,
-                            severity=parse_message_for_field("Severity", result.text),
-                            confidence=parse_message_for_field(
-                                "Confidence", result.text
-                            ),
-                            host=parse_message_for_field("Host", result.text),
-                            path=parse_message_for_field("Path", result.text),
-                            detail=parse_message_for_field("Issue Detail", result.text),
-                            background=parse_message_for_field(
-                                "Issue Background", result.text
-                            ),
-                            remediation=parse_message_for_field(
-                                "Issue Remediation", result.text
-                            ),
-                            remediation_detail=parse_message_for_field(
-                                "Remediation Detail", result.text
-                            ),
-                            remediation_background=parse_message_for_field(
-                                "Remediation Background", result.text
-                            ),
-                            evidence=parse_message_for_field("Evidence", result.text),
-                            collaborator_interaction=parse_message_for_field(
-                                "Collaborator HTTP interaction", result.text
-                            ),
-                            static_analysis=parse_message_for_field(
-                                "Static analysis", result.text
-                            ),
-                            dynamic_analysis=parse_message_for_field(
-                                "Dynamic analysis", result.text
-                            ),
-                            references=parse_message_for_field(
-                                "References", result.text
-                            ),
-                            vulnerability_classifications=parse_message_for_field(
-                                "Vulnerability Classifications", result.text
-                            ),
-                        )
+                    issue = Issue(
+                        name=url_test_case.name,
+                        description=result.message,
+                        severity=parse_message_for_field("Severity", result.text),
+                        confidence=parse_message_for_field("Confidence", result.text),
+                        host=parse_message_for_field("Host", result.text),
+                        path=parse_message_for_field("Path", result.text),
+                        detail=parse_message_for_field("Issue Detail", result.text),
                     )
+
+                    background = parse_message_for_field(
+                        "Issue Background", result.text
+                    )
+                    if background:
+                        issue.background = background
+
+                    remediation = parse_message_for_field(
+                        "Issue Remediation", result.text
+                    )
+                    if remediation:
+                        issue.remediation = remediation
+
+                    remediation_detail = parse_message_for_field(
+                        "Remediation Detail", result.text
+                    )
+                    if remediation_detail:
+                        issue.remediation_detail = remediation_detail
+
+                    remediation_background = parse_message_for_field(
+                        "Remediation Background", result.text
+                    )
+                    if remediation_background:
+                        issue.remediation_background = remediation_background
+
+                    evidence = parse_message_for_field("Evidence", result.text)
+                    if evidence:
+                        issue.evidence = evidence
+
+                    collaborator_interaction = parse_message_for_field(
+                        "Collaborator HTTP interaction", result.text
+                    )
+                    if collaborator_interaction:
+                        issue.collaborator_interaction = collaborator_interaction
+
+                    static_analysis = parse_message_for_field(
+                        "Static analysis", result.text
+                    )
+
+                    if static_analysis:
+                        issue.static_analysis = static_analysis
+
+                    dynamic_analysis = parse_message_for_field(
+                        "Dynamic analysis", result.text
+                    )
+                    if dynamic_analysis:
+                        issue.dynamic_analysis = dynamic_analysis
+
+                    references = parse_message_for_field("References", result.text)
+                    if references:
+                        issue.references = references
+
+                    vulnerability_classifications = parse_message_for_field(
+                        "Vulnerability Classifications", result.text
+                    )
+                    if vulnerability_classifications:
+                        issue.vulnerability_classifications = (
+                            vulnerability_classifications
+                        )
+
+                    url_test_issues.issues.append(issue)
 
         url_issue_list.append(url_test_issues)
 
@@ -251,13 +244,18 @@ def parse_message_for_field(field: str, message: str):
                 collaborator_interaction_response_list
             ).strip()
 
-            return CollaboratorInteraction(
-                message=collaborator_interaction_message_str,
-                evidence=Evidence(
-                    request=collaborator_interaction_request_str,
-                    response=collaborator_interaction_response_str,
-                ),
-            )
+            if (
+                collaborator_interaction_message_str
+                and collaborator_interaction_request_str
+                and collaborator_interaction_response_str
+            ):
+                return CollaboratorInteraction(
+                    message=collaborator_interaction_message_str,
+                    evidence=Evidence(
+                        request=collaborator_interaction_request_str,
+                        response=collaborator_interaction_response_str,
+                    ),
+                )
 
         # List fields should return a list of strings
         elif field in parse_fields["list"]:

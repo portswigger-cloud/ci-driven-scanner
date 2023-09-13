@@ -1,14 +1,16 @@
 import os
-import sys
+import pprint
 import subprocess
+import sys
 
 from art import text2art
 
-import parsers.junit as p_junit
-import outputters.console as o_console
+import burp_wrapper.outputters.console as o_console
+import burp_wrapper.outputters.json as o_json
+import burp_wrapper.parsers.junit as p_junit
 
 JUNIT_FILE_PATH = os.environ.get("BURP_REPORT_FILE_PATH", "burp_junit_report.xml")
-REPORTS_DIRECTORY = os.environ.get("BURP_REPORTS_DIRECTORY", "burp_reports")
+REPORTS_DIRECTORY = os.environ.get("BURP_REPORTS_DIRECTORY", "./burp_reports")
 
 SCAN_INITIATOR_PATH = "/usr/local/burpsuite_enterprise/bin/initiate-scan"
 
@@ -42,7 +44,7 @@ def run_scan_initiator() -> int:
     return 42
 
 
-if __name__ == "__main__":
+def main():
     print_header()
     exit_code = run_scan_initiator()
     print_page_break(leading_new_line=False)
@@ -55,4 +57,13 @@ if __name__ == "__main__":
     o_console.output_issue_counts(target_issues)
     print_page_break()
 
+    if not os.path.exists(REPORTS_DIRECTORY):
+        os.makedirs(REPORTS_DIRECTORY)
+
+    o_json.create_report(REPORTS_DIRECTORY, target_issues)
+
     sys.exit(exit_code)
+
+
+if __name__ == "__main__":
+    main()

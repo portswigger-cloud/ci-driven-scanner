@@ -85,7 +85,11 @@ def output_issue_counts(target_issues: list) -> None:
         Low      : {issue_counts["low"]}
         Info     : {issue_counts["info"]}
         Unknown  : {issue_counts["unknown"]}"""
-    print(issue_count_message)
+
+    if total_issues > 0:
+        print(issue_count_message)
+    else:
+        print("🎉✨ - No issues detected!")
 
     if total_issues > 0 and os.environ.get("GITHUB_ACTIONS", False):
         print("")
