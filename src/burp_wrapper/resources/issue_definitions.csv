@@ -1,0 +1,169 @@
+OS command injection,High,0x100100,1048832,CWE-77CWE-78CWE-116
+SQL injection,High,0x100200,1049088,CWE-89CWE-94CWE-116
+SQL injection (second order),High,0x100210,1049104,CWE-89CWE-94CWE-116
+ASP.NET tracing enabled,High,0x100280,1049216,CWE-10CWE-11
+File path traversal,High,0x100300,1049344,CWE-22CWE-23CWE-35CWE-36
+XML external entity injection,High,0x100400,1049600,CWE-611
+LDAP injection,High,0x100500,1049856,CWE-90CWE-116
+XPath injection,High,0x100600,1050112,CWE-94CWE-116CWE-159CWE-643
+XML injection,Medium,0x100700,1050368,CWE-91CWE-116CWE-159CWE-611CWE-776
+ASP.NET debugging enabled,Medium,0x100800,1050624,CWE-11
+HTTP PUT method is enabled,High,0x100900,1050880,CWE-650
+Out-of-band resource load (HTTP),High,0x100A00,1051136,CWE-610CWE-918
+File path manipulation,High,0x100B00,1051392,CWE-22CWE-23CWE-35CWE-36
+PHP code injection,High,0x100C00,1051648,CWE-94CWE-116CWE-159
+Server-side JavaScript code injection,High,0x100D00,1051904,CWE-94CWE-95CWE-116
+Perl code injection,High,0x100E00,1052160,CWE-94CWE-95CWE-116
+Ruby code injection,High,0x100F00,1052416,CWE-94CWE-95CWE-116
+Python code injection,High,0x100F10,1052432,CWE-94CWE-95CWE-116
+Expression Language injection,High,0x100F20,1052448,CWE-116CWE-159CWE-917
+Unidentified code injection,High,0x101000,1052672,CWE-94CWE-95CWE-116
+Server-side template injection,High,0x101080,1052800,CWE-94CWE-95CWE-116
+SSI injection,High,0x101100,1052928,CWE-96CWE-116CWE-159
+Cross-site scripting (stored),High,0x200100,2097408,CWE-79CWE-80CWE-116CWE-159
+HTTP request smuggling,High,0x200140,2097472,CWE-444
+Client-side desync,High,0x200141,2097473,CWE-444
+Web cache poisoning,High,0x200180,2097536,CWE-436
+HTTP response header injection,High,0x200200,2097664,CWE-113
+Cross-site scripting (reflected),High,0x200300,2097920,CWE-79CWE-80CWE-116CWE-159
+Client-side template injection,High,0x200308,2097928,CWE-116CWE-159
+Cross-site scripting (DOM-based),High,0x200310,2097936,CWE-79CWE-80CWE-116CWE-159
+Cross-site scripting (reflected DOM-based),High,0x200311,2097937,CWE-79CWE-80CWE-116CWE-159
+Cross-site scripting (stored DOM-based),High,0x200312,2097938,CWE-79CWE-80CWE-116CWE-159
+Client-side prototype pollution,Information,0x200316,2097942,CWE-1321
+JavaScript injection (DOM-based),High,0x200320,2097952,CWE-94CWE-95CWE-116
+JavaScript injection (reflected DOM-based),High,0x200321,2097953,CWE-94CWE-95CWE-116
+JavaScript injection (stored DOM-based),High,0x200322,2097954,CWE-94CWE-95CWE-116
+Path-relative style sheet import,Information,0x200328,2097960,CWE-16
+Client-side SQL injection (DOM-based),High,0x200330,2097968,CWE-89CWE-116CWE-159
+Client-side SQL injection (reflected DOM-based),High,0x200331,2097969,CWE-89CWE-116CWE-159
+Client-side SQL injection (stored DOM-based),High,0x200332,2097970,CWE-89CWE-116CWE-159
+WebSocket URL poisoning (DOM-based),High,0x200340,2097984,CWE-345CWE-346CWE-441
+WebSocket URL poisoning (reflected DOM-based),High,0x200341,2097985,CWE-345CWE-346CWE-441
+WebSocket URL poisoning (stored DOM-based),High,0x200342,2097986,CWE-345CWE-346CWE-441
+Local file path manipulation (DOM-based),High,0x200350,2098000,CWE-22CWE-73
+Local file path manipulation (reflected DOM-based),High,0x200351,2098001,CWE-22CWE-73
+Local file path manipulation (stored DOM-based),High,0x200352,2098002,CWE-22CWE-73
+Client-side XPath injection (DOM-based),Low,0x200360,2098016,CWE-79CWE-116CWE-159
+Client-side XPath injection (reflected DOM-based),Low,0x200361,2098017,CWE-79CWE-116CWE-159
+Client-side XPath injection (stored DOM-based),Low,0x200362,2098018,CWE-79CWE-116CWE-159
+Client-side JSON injection (DOM-based),Low,0x200370,2098032,CWE-79CWE-116CWE-159
+Client-side JSON injection (reflected DOM-based),Low,0x200371,2098033,CWE-79CWE-116CWE-159
+Client-side JSON injection (stored DOM-based),Low,0x200372,2098034,CWE-79CWE-116CWE-159
+Flash cross-domain policy,High,0x200400,2098176,CWE-942
+Silverlight cross-domain policy,High,0x200500,2098432,CWE-942
+GraphQL endpoint found,Information,0x200510,2098448,
+GraphQL endpoint discovered,Information,0x200511,2098449,
+GraphQL introspection enabled,Low,0x200512,2098450,CWE-200
+GraphQL suggestions enabled,Low,0x200513,2098451,CWE-200
+GraphQL content type not validated,Low,0x200514,2098452,CWE-352
+Cross-origin resource sharing,Information,0x200600,2098688,CWE-942
+Cross-origin resource sharing: arbitrary origin trusted,High,0x200601,2098689,CWE-942
+Cross-origin resource sharing: unencrypted origin trusted,Low,0x200602,2098690,CWE-942
+Cross-origin resource sharing: all subdomains trusted,Low,0x200603,2098691,CWE-942
+Cross-site request forgery,Medium,0x200700,2098944,CWE-352
+SMTP header injection,Medium,0x200800,2099200,CWE-93CWE-159
+JWT signature not verified,High,0x200900,2099456,CWE-345CWE-347
+JWT none algorithm supported,High,0x200901,2099457,CWE-345
+JWT self-signed JWK header supported,High,0x200902,2099458,
+JWT weak HMAC secret,High,0x200903,2099459,
+JWT arbitrary jku header supported,High,0x200904,2099460,
+JWT arbitrary x5u header supported,High,0x200905,2099461,
+Cleartext submission of password,High,0x300100,3145984,CWE-319
+External service interaction (DNS),Information,0x300200,3146240,CWE-918CWE-406
+External service interaction (HTTP),High,0x300210,3146256,CWE-918CWE-406
+External service interaction (SMTP),Information,0x300220,3146272,CWE-16CWE-406
+Referer-dependent response,Information,0x400100,4194560,CWE-16CWE-213
+Spoofable client IP address,Information,0x400110,4194576,CWE-16
+User agent-dependent response,Information,0x400120,4194592,CWE-16
+Password returned in later response,Medium,0x400200,4194816,CWE-204
+Password submitted using GET method,Low,0x400300,4195072,CWE-598
+Password returned in URL query string,Low,0x400400,4195328,CWE-598
+SQL statement in request parameter,Medium,0x400480,4195456,CWE-598
+Cross-domain POST,Information,0x400500,4195584,CWE-16
+ASP.NET ViewState without MAC enabled,High,0x400600,4195840,CWE-642
+XML entity expansion,Medium,0x400700,4196096,CWE-776
+Long redirection response,Information,0x400800,4196352,CWE-698
+Serialized object in HTTP message,High,0x400900,4196608,CWE-502
+Duplicate cookies set,Information,0x400A00,4196864,CWE-16
+Input returned in response (stored),Information,0x400B00,4197120,CWE-20CWE-116
+Input returned in response (reflected),Information,0x400C00,4197376,CWE-20CWE-116
+Suspicious input transformation (reflected),Information,0x400D00,4197632,CWE-20
+Suspicious input transformation (stored),Information,0x400E00,4197888,CWE-20
+Request URL override,Information,0x400F00,4198144,CWE-436
+Vulnerable JavaScript dependency,Low,0x500080,5243008,CWE-1104
+Open redirection (reflected),Low,0x500100,5243136,CWE-601
+Open redirection (stored),Medium,0x500101,5243137,CWE-601
+Open redirection (DOM-based),Low,0x500110,5243152,CWE-601
+Open redirection (reflected DOM-based),Low,0x500111,5243153,CWE-601
+Open redirection (stored DOM-based),Medium,0x500112,5243154,CWE-601
+TLS cookie without secure flag set,Medium,0x500200,5243392,CWE-614
+Cookie scoped to parent domain,Low,0x500300,5243648,CWE-16
+Cross-domain Referer leakage,Information,0x500400,5243904,CWE-200
+Cross-domain script include,Information,0x500500,5244160,CWE-829
+Cookie without HttpOnly flag set,Low,0x500600,5244416,CWE-16
+Session token in URL,Medium,0x500700,5244672,CWE-200CWE-384CWE-598
+Password field with autocomplete enabled,Low,0x500800,5244928,CWE-200
+Password value set in cookie,Medium,0x500900,5245184,CWE-287
+File upload functionality,Information,0x500980,5245312,CWE-434
+Frameable response (potential Clickjacking),Information,0x5009A0,5245344,CWE-693
+Browser cross-site scripting filter disabled,Information,0x5009B0,5245360,CWE-16
+HTTP TRACE method is enabled,Information,0x500A00,5245440,CWE-16
+Cookie manipulation (DOM-based),Low,0x500B00,5245696,CWE-565CWE-829
+Cookie manipulation (reflected DOM-based),Low,0x500B01,5245697,CWE-565CWE-829
+Cookie manipulation (stored DOM-based),Low,0x500B02,5245698,CWE-565CWE-829
+Ajax request header manipulation (DOM-based),Low,0x500C00,5245952,CWE-116
+Ajax request header manipulation (reflected DOM-based),Low,0x500C01,5245953,CWE-116
+Ajax request header manipulation (stored DOM-based),Low,0x500C02,5245954,CWE-116
+Denial of service (DOM-based),Information,0x500D00,5246208,CWE-400
+Denial of service (reflected DOM-based),Information,0x500D01,5246209,CWE-400
+Denial of service (stored DOM-based),Low,0x500D02,5246210,CWE-400
+HTML5 web message manipulation (DOM-based),Information,0x500E00,5246464,CWE-20
+HTML5 web message manipulation (reflected DOM-based),Information,0x500E01,5246465,CWE-20
+HTML5 web message manipulation (stored DOM-based),Information,0x500E02,5246466,CWE-20
+HTML5 storage manipulation (DOM-based),Information,0x500F00,5246720,CWE-20
+HTML5 storage manipulation (reflected DOM-based),Information,0x500F01,5246721,CWE-20
+HTML5 storage manipulation (stored DOM-based),Information,0x500F02,5246722,CWE-20
+Link manipulation (DOM-based),Low,0x501000,5246976,CWE-20
+Link manipulation (reflected DOM-based),Low,0x501001,5246977,CWE-20
+Link manipulation (stored DOM-based),Low,0x501002,5246978,CWE-20
+Link manipulation (reflected),Information,0x501003,5246979,CWE-73CWE-20
+Link manipulation (stored),Information,0x501004,5246980,CWE-73CWE-20
+Document domain manipulation (DOM-based),Medium,0x501100,5247232,CWE-20
+Document domain manipulation (reflected DOM-based),Medium,0x501101,5247233,CWE-20
+Document domain manipulation (stored DOM-based),Medium,0x501102,5247234,CWE-20
+DOM data manipulation (DOM-based),Information,0x501200,5247488,CWE-20
+DOM data manipulation (reflected DOM-based),Information,0x501201,5247489,CWE-20
+DOM data manipulation (stored DOM-based),Information,0x501202,5247490,CWE-20
+CSS injection (reflected),Medium,0x501300,5247744,CWE-73CWE-20
+CSS injection (stored),Medium,0x501301,5247745,CWE-73CWE-20
+Client-side HTTP parameter pollution (reflected),Low,0x501400,5248000,CWE-233CWE-20
+Client-side HTTP parameter pollution (stored),Low,0x501401,5248001,CWE-233CWE-20
+Form action hijacking (reflected),Medium,0x501500,5248256,CWE-73CWE-20
+Form action hijacking (stored),Medium,0x501501,5248257,CWE-73CWE-20
+Database connection string disclosed,Medium,0x600080,6291584,CWE-15CWE-497
+Source code disclosure,Low,0x6000B0,6291632,CWE-18CWE-200CWE-388CWE-540CWE-541CWE-615
+Backup file,Information,0x6000D8,6291672,CWE-530
+Directory listing,Information,0x600100,6291712,CWE-538CWE-548
+Email addresses disclosed,Information,0x600200,6291968,CWE-200
+Private IP addresses disclosed,Information,0x600300,6292224,CWE-200
+Social security numbers disclosed,Information,0x600400,6292480,CWE-200
+Credit card numbers disclosed,Information,0x600500,6292736,CWE-200CWE-388
+Private key disclosed,Information,0x600550,6292816,CWE-200CWE-388
+Robots.txt file,Information,0x600600,6292992,CWE-200
+Json Web Key Set disclosed,Information,0x600700,6293248,CWE-200
+JWT private key disclosed,High,0x600800,6293504,CWE-200
+Cacheable HTTPS response,Information,0x700100,7340288,CWE-524CWE-525
+Base64-encoded data in parameter,Information,0x700200,7340544,CWE-310CWE-311
+Multiple content types specified,Information,0x800100,8388864,CWE-436
+HTML does not specify charset,Information,0x800200,8389120,CWE-16CWE-436
+HTML uses unrecognized charset,Information,0x800300,8389376,CWE-16CWE-436
+Content type incorrectly stated,Low,0x800400,8389632,CWE-16CWE-436
+Content type is not specified,Information,0x800500,8389888,CWE-16
+TLS certificate,Medium,0x1000100,16777472,CWE-295CWE-326CWE-327
+Unencrypted communications,Low,0x1000200,16777728,CWE-326
+Strict transport security not enforced,Low,0x1000300,16777984,CWE-523
+Mixed content,Information,0x1000400,16778240,CWE-16CWE-319
+Hidden HTTP 2,Information,0x1000500,16778496,CWE-912
+Extension generated issue,Information,0x8000000,134217728,
+BCheck generated issue,Information,0x9000000,150994944,

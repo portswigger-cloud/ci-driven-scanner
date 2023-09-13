@@ -38,3 +38,11 @@ class Issue:
 class Target:
     url: str
     issues: list[Issue] = field(default_factory=list)
+
+
+@dataclass
+class IssueDefinition:
+    name: str
+    severity: str
+    hex_id: str
+    dec_id: str
