@@ -2,7 +2,6 @@
 name = "burp_wrapper"
 version = "0.0.0"
 description = "A wrapper for the BurpSuite CI Scanning conatiner to provide interesting and useful outputs"
-license = "MIT"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -27,7 +26,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-burp_wrapper = ["**/resources/*"]
+burp_wrapper = ["**/resources/*", "**/templates/*"]
 
 [project.scripts]
 burp_wrapper = "burp_wrapper.main:cli"

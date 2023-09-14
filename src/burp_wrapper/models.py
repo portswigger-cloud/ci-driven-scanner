@@ -41,7 +41,7 @@ class Target:
 
 
 @dataclass
-class IssueDefinition:
+class IssueDefinitionMetadata:
     name: str
     severity: str
     hex_id: str

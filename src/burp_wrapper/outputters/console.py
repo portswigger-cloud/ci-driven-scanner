@@ -60,7 +60,6 @@ def output_issue_counts(target_issues: list) -> None:
         "low": 0,
         "medium": 0,
         "high": 0,
-        "unknown": 0,
     }
 
     for target in target_issues:
@@ -71,8 +70,6 @@ def output_issue_counts(target_issues: list) -> None:
                 match l_severity:
                     case "info" | "low" | "medium" | "high":
                         issue_counts[l_severity] += 1
-                    case _:
-                        issue_counts["unknown"] += 1
 
     total_issues = sum(issue_counts.values())
 
@@ -83,8 +80,7 @@ def output_issue_counts(target_issues: list) -> None:
         High     : {issue_counts["high"]}
         Medium   : {issue_counts["medium"]}
         Low      : {issue_counts["low"]}
-        Info     : {issue_counts["info"]}
-        Unknown  : {issue_counts["unknown"]}"""
+        Info     : {issue_counts["info"]}"""
 
     if total_issues > 0:
         print(issue_count_message)

@@ -6,6 +6,7 @@ from art import text2art
 
 import burp_wrapper.outputters.console as o_console
 import burp_wrapper.outputters.json as o_json
+import burp_wrapper.outputters.html as o_html
 import burp_wrapper.parsers.junit as p_junit
 
 JUNIT_FILE_PATH = os.environ.get("BURP_REPORT_FILE_PATH", "burp_junit_report.xml")
@@ -60,6 +61,7 @@ def cli():
         os.makedirs(REPORTS_DIRECTORY)
 
     o_json.create_report(REPORTS_DIRECTORY, target_issues)
+    o_html.create_report(REPORTS_DIRECTORY, target_issues)
 
     sys.exit(exit_code)
 
