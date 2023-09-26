@@ -13,5 +13,8 @@ def get_issue_metadata(name: str):
         for row in csvreader:
             if name == row[0]:
                 return IssueDefinitionMetadata(
-                    name=name, severity=row[1], hex_id=row[2], dec_id=row[3]
+                    name=name,
+                    severity=row[1],
+                    hex_id=row[2],
+                    dec_id=int(row[3]),
                 )

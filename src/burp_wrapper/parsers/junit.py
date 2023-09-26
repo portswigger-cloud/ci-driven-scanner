@@ -4,97 +4,106 @@ import sys
 
 from junitparser import JUnitXml
 
-from burp_wrapper.models import CollaboratorInteraction, Evidence, Issue, Target
+import burp_wrapper.issue_definition_metadata as i_def
+
+from burp_wrapper.models import CollaboratorInteraction, Evidence, Issue, IssueLocation
 
 
-def parse_url_issues_from_junit(junit_file_path: str) -> list[Target]:
+def parse_issues_from_junit(junit_file_path: str) -> list[Issue]:
     if not os.path.exists(junit_file_path):
         print(f"ERROR: Unable to find JUnit report file at: {junit_file_path}")
         sys.exit(42)
 
-    url_issue_list: list[Target] = []
+    detected_issues: dict[str, Issue] = {}
 
     xml = JUnitXml.fromfile(junit_file_path)
     for url_test_suite in xml:
-        url_test_issues = Target(url_test_suite.name)
-
         if int(url_test_suite.failures) > 0:
             for url_test_case in url_test_suite:
                 for result in url_test_case.result:
-                    issue = Issue(
-                        name=url_test_case.name,
-                        description=result.message,
-                        severity=parse_message_for_field("Severity", result.text),
-                        confidence=parse_message_for_field("Confidence", result.text),
+                    if url_test_case.name not in detected_issues:
+                        definition = i_def.get_issue_metadata(url_test_case.name)
+                        issue = Issue(
+                            name=url_test_case.name,
+                            severity=parse_message_for_field("Severity", result.text),
+                            confidence=parse_message_for_field(
+                                "Confidence", result.text
+                            ),
+                            kb_article_url=definition.kb_article_url(),
+                        )
+                        background = parse_message_for_field(
+                            "Issue Background", result.text
+                        )
+                        if background:
+                            issue.background = background
+
+                        remediation = parse_message_for_field(
+                            "Issue Remediation", result.text
+                        )
+                        if remediation:
+                            issue.remediation = remediation
+
+                        remediation_detail = parse_message_for_field(
+                            "Remediation Detail", result.text
+                        )
+                        if remediation_detail:
+                            issue.remediation_detail = remediation_detail
+
+                        remediation_background = parse_message_for_field(
+                            "Remediation Background", result.text
+                        )
+                        if remediation_background:
+                            issue.remediation_background = remediation_background
+
+                        references = parse_message_for_field("References", result.text)
+                        if references:
+                            issue.references = references
+
+                        vulnerability_classifications = parse_message_for_field(
+                            "Vulnerability Classifications", result.text
+                        )
+                        if vulnerability_classifications:
+                            issue.vulnerability_classifications = (
+                                vulnerability_classifications
+                            )
+
+                        detected_issues[url_test_case.name] = issue
+                    else:
+                        issue = detected_issues[url_test_case.name]
+
+                    issue_location = IssueLocation(
                         host=parse_message_for_field("Host", result.text),
                         path=parse_message_for_field("Path", result.text),
                         detail=parse_message_for_field("Issue Detail", result.text),
                     )
 
-                    background = parse_message_for_field(
-                        "Issue Background", result.text
-                    )
-                    if background:
-                        issue.background = background
-
-                    remediation = parse_message_for_field(
-                        "Issue Remediation", result.text
-                    )
-                    if remediation:
-                        issue.remediation = remediation
-
-                    remediation_detail = parse_message_for_field(
-                        "Remediation Detail", result.text
-                    )
-                    if remediation_detail:
-                        issue.remediation_detail = remediation_detail
-
-                    remediation_background = parse_message_for_field(
-                        "Remediation Background", result.text
-                    )
-                    if remediation_background:
-                        issue.remediation_background = remediation_background
-
                     evidence = parse_message_for_field("Evidence", result.text)
                     if evidence:
-                        issue.evidence = evidence
+                        issue_location.evidence = evidence
 
                     collaborator_interaction = parse_message_for_field(
                         "Collaborator HTTP interaction", result.text
                     )
                     if collaborator_interaction:
-                        issue.collaborator_interaction = collaborator_interaction
+                        issue_location.collaborator_interaction = (
+                            collaborator_interaction
+                        )
 
                     static_analysis = parse_message_for_field(
                         "Static analysis", result.text
                     )
-
                     if static_analysis:
-                        issue.static_analysis = static_analysis
+                        issue_location.static_analysis = static_analysis
 
                     dynamic_analysis = parse_message_for_field(
                         "Dynamic analysis", result.text
                     )
                     if dynamic_analysis:
-                        issue.dynamic_analysis = dynamic_analysis
+                        issue_location.dynamic_analysis = dynamic_analysis
 
-                    references = parse_message_for_field("References", result.text)
-                    if references:
-                        issue.references = references
+                    issue.issue_locations.append(issue_location)
 
-                    vulnerability_classifications = parse_message_for_field(
-                        "Vulnerability Classifications", result.text
-                    )
-                    if vulnerability_classifications:
-                        issue.vulnerability_classifications = (
-                            vulnerability_classifications
-                        )
-
-                    url_test_issues.issues.append(issue)
-
-        url_issue_list.append(url_test_issues)
-
-    return url_issue_list
+    return detected_issues
 
 
 def parse_message_for_field(field: str, message: str):

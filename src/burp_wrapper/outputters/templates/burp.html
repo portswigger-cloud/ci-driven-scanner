@@ -513,7 +513,7 @@
                 width="210" height="60">
             <h1>Burp Scanner Report</h1>
         </div>
-        <sup>Generated at: {{ now() }}</sup>
+        <sup>Generated at: {{ iso_now(timespec="seconds") }}</sup>
         <h1>Summary</h1>
         <span class="TEXT">The table below shows the numbers of issues identified in different categories.
             Issues are
@@ -540,57 +540,84 @@
             <tr>
                 <td rowspan="4" valign="middle" class="label">Severity</td>
                 <td class="info" height="30">High</td>
-                <td class="colour_holder"><span class="colour_block high_certain">{{ severity_confidence["high"][0]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block high_firm">{{ severity_confidence["high"][1]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block high_tentative">{{ severity_confidence["high"][2]
-                        }}</span></td>
-                <td class="colour_holder_end"><span class="colour_block row_total">{{ severity_confidence["high"] |
-                        sum() }}</span></td>
+                <td class="colour_holder"><span class="colour_block high_certain">{{
+                        severity_confidence_table["high"][0] }}</span></td>
+                <td class="colour_holder"><span class="colour_block high_firm">{{
+                        severity_confidence_table["high"][1] }}</span></td>
+                <td class="colour_holder"><span class="colour_block high_tentative">{{
+                        severity_confidence_table["high"][2] }}</span></td>
+                <td class="colour_holder_end"><span class="colour_block row_total">{{
+                        severity_confidence_table["high"] | sum() }}</span></td>
             </tr>
             <tr>
                 <td class="info" height="30">Medium</td>
-                <td class="colour_holder"><span class="colour_block medium_certain">{{ severity_confidence["medium"][0]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block medium_firm">{{ severity_confidence["medium"][1]
-                        }}</span></td>
+                <td class="colour_holder"><span class="colour_block medium_certain">{{
+                        severity_confidence_table["medium"][0] }}</span></td>
+                <td class="colour_holder"><span class="colour_block medium_firm">{{
+                        severity_confidence_table["medium"][1] }}</span></td>
                 <td class="colour_holder"><span class="colour_block medium_tentative">{{
-                        severity_confidence["medium"][2]
-                        }}</span></td>
-                <td class="colour_holder_end"><span class="colour_block row_total">{{ severity_confidence["medium"] |
-                        sum() }}</span></td>
+                        severity_confidence_table["medium"][2] }}</span></td>
+                <td class="colour_holder_end"><span class="colour_block row_total">{{
+                        severity_confidence_table["medium"] | sum() }}</span></td>
             </tr>
             <tr>
                 <td class="info" height="30">Low</td>
-                <td class="colour_holder"><span class="colour_block low_certain">{{ severity_confidence["low"][0]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block low_firm">{{ severity_confidence["low"][1]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block low_tentative">{{ severity_confidence["low"][2]
-                        }}</span></td>
-                <td class="colour_holder_end"><span class="colour_block row_total">{{ severity_confidence["low"] | sum()
-                        }}</span></td>
+                <td class="colour_holder"><span class="colour_block low_certain">{{
+                        severity_confidence_table["low"][0] }}</span></td>
+                <td class="colour_holder"><span class="colour_block low_firm">{{
+                        severity_confidence_table["low"][1] }}</span></td>
+                <td class="colour_holder"><span class="colour_block low_tentative">{{
+                        severity_confidence_table["low"][2] }}</span></td>
+                <td class="colour_holder_end"><span class="colour_block row_total">{{
+                        severity_confidence_table["low"] | sum() }}</span></td>
             </tr>
             <tr>
                 <td class="info" height="30">Info</td>
-                <td class="colour_holder"><span class="colour_block info_certain">{{ severity_confidence["info"][0]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block info_firm">{{ severity_confidence["info"][1]
-                        }}</span></td>
-                <td class="colour_holder"><span class="colour_block info_tentative">{{ severity_confidence["info"][2]
-                        }}</span></td>
-                <td class="colour_holder_end"><span class="colour_block row_total">{{ severity_confidence["info"] |
-                        sum()
-                        }}</span></td>
+                <td class="colour_holder"><span class="colour_block info_certain">{{
+                        severity_confidence_table["info"][0] }}</span></td>
+                <td class="colour_holder"><span class="colour_block info_firm">{{
+                        severity_confidence_table["info"][1] }}</span></td>
+                <td class="colour_holder"><span class="colour_block info_tentative">{{
+                        severity_confidence_table["info"][2] }}</span></td>
+                <td class="colour_holder_end"><span class="colour_block row_total">{{
+                        severity_confidence_table["info"] | sum() }}</span></td>
             </tr>
             <tr>
                 <td colspan="5"></td>
                 <td class="colour_holder_end"><span class="colour_block row_total">{{
-                        severity_confidence["total"] }}</span></td>
+                        severity_confidence_table["total"] }}</span></td>
             </tr>
         </table><br>
-        <h1>Details</h1>
+        <h1>Issue Overview</h1>
+        <span class="TEXT">The table below shows the numbers of each issue identified witrh the severity and confidence.
+            Click on the issue name to find out more from the PortSwigger knowledgebase.
+        </span><br><br>
+        <table cellpadding="0" cellspacing="0" class="overview_table">
+            <tr>
+                <td height="30" class="info">Issue</td>
+                <td height="30" class="info">Severity</td>
+                <td height="30" class="info">Confidence</td>
+                <td height="30" class="info_end">Occurences</td>
+            </tr>
+            {% for issue_criticality in issue_overview_table %}
+            {% set (severity, confidence) = issue_criticality.split("_") %}
+            {% for (issue, data) in issue_overview_table[issue_criticality] %}
+            {% set kb_url = data["kb_article_url"] %}
+            <tr>
+                <td class="colour_holder"><span class="colour_block row_total"><a href="{{ kb_url }}" target="_blank">
+                            {{ issue }}</a></span></td>
+                <td class="colour_holder"><span class="colour_block {{ issue_criticality }}">
+                        {{ severity.title() }}</span></td>
+                <td class="colour_holder"><span class="colour_block {{ issue_criticality }}">
+                        {{ confidence.title() }}</span></td>
+                <td class="colour_holder_end"><span class="colour_block row_total">
+                        {{ data['count'] }}</span></td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table><br>
+
+        <h1>Issue Details</h1>
     </div>
 </body>
 

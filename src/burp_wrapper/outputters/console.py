@@ -18,58 +18,58 @@ def get_severity_emoji(severity: str):
             return "🤔"
 
 
-def output_summary(target_issues: list) -> None:
-    successful_targets = []
-    failed_targets = []
-    for target in target_issues:
-        if len(target.issues) > 0:
-            failed_message_list = [
-                "",
-                f"{FAIL} - {len(target.issues)} issues detected at: {target.url} ",
-            ]
-            for issue in target.issues:
-                failed_message = [
-                    f"     {get_severity_emoji(issue.severity)} - {issue.severity} - {issue.name}:",
-                    "",
-                    f"       Description: {issue.description}",
-                    f"       Confidence: {issue.confidence}",
-                ]
-                if issue.references:
-                    failed_message.append("       References:")
-                    for reference in issue.references:
-                        failed_message.append(f"           {reference}")
+def output_summary(issues: dict) -> None:
+    if len(issues.keys()) > 0:
+        print(f"{FAIL} Detected Issues:")
+        severities = ["high", "medium", "low", "info"]
+        confidences = ["certain", "firm", "tentative"]
 
-                failed_message.append("")
-                failed_message_list.extend(failed_message)
-
-            failed_targets.append("\n".join(failed_message_list))
-
-            continue
-        successful_targets.append(f"{SUCCESS} - No issues detected at: {target.url}")
-
-    print("Scan summary:")
-    print("")
-    print("\n".join(successful_targets))
-    if failed_targets:
-        print("\n".join(failed_targets))
+        for severity in severities:
+            for confidence in confidences:
+                sev_issues = {
+                    key: value
+                    for (key, value) in issues.items()
+                    if value.severity.lower() == severity
+                    and value.confidence.lower() == confidence
+                }
+                for issue in sev_issues.values():
+                    print("")
+                    print(
+                        f"  {get_severity_emoji(issue.severity)} - {issue.severity} - {issue.name}:"
+                    )
+                    print(
+                        f"    Confidence: {issue.confidence}",
+                    )
+                    print(f"    KB Article: {issue.kb_article_url}")
+                    print("")
+                    print("    Affected Locations:")
+                    for location in issue.issue_locations:
+                        print(f"      {location.host}{location.path}")
+        print("")
 
 
-def output_issue_counts(target_issues: list) -> None:
-    issue_counts = {
+def severity_count(issues: dict) -> dict:
+    sev_counts = {
         "info": 0,
         "low": 0,
         "medium": 0,
         "high": 0,
     }
 
-    for target in target_issues:
-        if len(target.issues) > 0:
-            for issue in target.issues:
-                l_severity = issue.severity.lower()
+    for sev in sev_counts.keys():
+        sev_counts[sev] += sum(
+            [
+                len(value.issue_locations)
+                for value in issues.values()
+                if value.severity.lower() == sev
+            ]
+        )
 
-                match l_severity:
-                    case "info" | "low" | "medium" | "high":
-                        issue_counts[l_severity] += 1
+    return sev_counts
+
+
+def output_issue_counts(issues: dict) -> None:
+    issue_counts = severity_count(issues)
 
     total_issues = sum(issue_counts.values())
 

@@ -9,6 +9,7 @@ import burp_wrapper.outputters.json as o_json
 import burp_wrapper.outputters.html as o_html
 import burp_wrapper.parsers.junit as p_junit
 
+
 JUNIT_FILE_PATH = os.environ.get("BURP_REPORT_FILE_PATH", "burp_junit_report.xml")
 REPORTS_DIRECTORY = os.environ.get("BURP_REPORTS_DIRECTORY", "./burp_reports")
 
@@ -49,19 +50,18 @@ def cli():
     exit_code = run_scan_initiator()
     print_page_break(leading_new_line=False)
 
-    target_issues = p_junit.parse_url_issues_from_junit(JUNIT_FILE_PATH)
-
-    o_console.output_summary(target_issues)
+    issues = p_junit.parse_issues_from_junit(JUNIT_FILE_PATH)
+    o_console.output_summary(issues)
     print_page_break(leading_new_line=False)
 
-    o_console.output_issue_counts(target_issues)
+    o_console.output_issue_counts(issues)
     print_page_break()
 
     if not os.path.exists(REPORTS_DIRECTORY):
         os.makedirs(REPORTS_DIRECTORY)
 
-    o_json.create_report(REPORTS_DIRECTORY, target_issues)
-    o_html.create_report(REPORTS_DIRECTORY, target_issues)
+    o_json.create_report(REPORTS_DIRECTORY, issues)
+    o_html.create_report(REPORTS_DIRECTORY, issues)
 
     sys.exit(exit_code)
 

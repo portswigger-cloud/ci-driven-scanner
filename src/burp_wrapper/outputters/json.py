@@ -19,8 +19,8 @@ class EnhancedJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-def create_report(reports_directory: str, target_issues: list) -> None:
-    json_out = json.dumps(target_issues, indent=4, cls=EnhancedJSONEncoder)
+def create_report(reports_directory: str, issues: dict) -> None:
+    json_out = json.dumps(list(issues.values()), indent=4, cls=EnhancedJSONEncoder)
     filename = f"{reports_directory}/burp.json"
     with open(filename, "w") as outfile:
         outfile.write(json_out)
