@@ -91,6 +91,7 @@ def create_report(reports_directory: str, issues: dict) -> None:
     content = template.render(
         severity_confidence_table=severity_confidence_table(list(issues.values())),
         issue_overview_table=issue_overview_table(issues.values()),
+        issues=issues,
     )
 
     with open(filename, mode="w", encoding="utf-8") as message:

@@ -30,21 +30,22 @@ def output_summary(issues: dict) -> None:
                     key: value
                     for (key, value) in issues.items()
                     if value.severity.lower() == severity
-                    and value.confidence.lower() == confidence
+                    and confidence
+                    in [x.confidence.lower() for x in value.issue_locations]
                 }
                 for issue in sev_issues.values():
                     print("")
                     print(
                         f"  {get_severity_emoji(issue.severity)} - {issue.severity} - {issue.name}:"
                     )
-                    print(
-                        f"    Confidence: {issue.confidence}",
-                    )
                     print(f"    KB Article: {issue.kb_article_url}")
                     print("")
                     print("    Affected Locations:")
                     for location in issue.issue_locations:
-                        print(f"      {location.host}{location.path}")
+                        if location.confidence.lower() == confidence:
+                            print(
+                                f"        {location.host}{location.path} [Confidence: {location.confidence}]"
+                            )
         print("")
 
 

@@ -602,9 +602,9 @@
             {% for issue_criticality in issue_overview_table %}
             {% set (severity, confidence) = issue_criticality.split("_") %}
             {% for (issue, data) in issue_overview_table[issue_criticality] %}
-            {% set kb_url = data["kb_article_url"] %}
             <tr>
-                <td class="colour_holder"><span class="colour_block row_total"><a href="{{ kb_url }}" target="_blank">
+                <td class="colour_holder"><span class="colour_block row_total"><a href="{{ data['kb_article_url'] }}"
+                            target="_blank">
                             {{ issue }}</a></span></td>
                 <td class="colour_holder"><span class="colour_block {{ issue_criticality }}">
                         {{ severity.title() }}</span></td>
@@ -618,6 +618,7 @@
         </table><br>
 
         <h1>Issue Details</h1>
+
     </div>
 </body>
 

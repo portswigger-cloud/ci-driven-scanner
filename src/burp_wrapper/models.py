@@ -18,6 +18,7 @@ class IssueLocation:
     host: str
     path: str
     detail: str
+    confidence: str
     evidence: list[Evidence] = field(default_factory=list)
     collaborator_interaction: CollaboratorInteraction = None
     static_analysis: str = None
@@ -28,7 +29,6 @@ class IssueLocation:
 class Issue:
     name: str
     severity: str
-    confidence: str
     kb_article_url: str
     background: str = None
     remediation: str = None

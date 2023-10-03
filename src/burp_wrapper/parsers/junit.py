@@ -25,11 +25,8 @@ def parse_issues_from_junit(junit_file_path: str) -> list[Issue]:
                         definition = i_def.get_issue_metadata(url_test_case.name)
                         issue = Issue(
                             name=url_test_case.name,
-                            severity=parse_message_for_field("Severity", result.text),
-                            confidence=parse_message_for_field(
-                                "Confidence", result.text
-                            ),
                             kb_article_url=definition.kb_article_url(),
+                            severity=parse_message_for_field("Severity", result.text),
                         )
                         background = parse_message_for_field(
                             "Issue Background", result.text
@@ -75,6 +72,7 @@ def parse_issues_from_junit(junit_file_path: str) -> list[Issue]:
                         host=parse_message_for_field("Host", result.text),
                         path=parse_message_for_field("Path", result.text),
                         detail=parse_message_for_field("Issue Detail", result.text),
+                        confidence=parse_message_for_field("Confidence", result.text),
                     )
 
                     evidence = parse_message_for_field("Evidence", result.text)
