@@ -3,12 +3,12 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Evidence:
-    request: str
-    response: str
+    request: str = None
+    response: str = None
 
 
 @dataclass
-class CollaboratorInteraction:
+class CollaboratorHttpInteraction:
     message: str
     evidence: Evidence
 
@@ -19,8 +19,11 @@ class IssueLocation:
     path: str
     detail: str
     confidence: str
+    remediation_detail: str = None
+    remediation_background: str = None
     evidence: list[Evidence] = field(default_factory=list)
-    collaborator_interaction: CollaboratorInteraction = None
+    collaborator_http_interaction: CollaboratorHttpInteraction = None
+    collaborator_dns_interaction: str = None
     static_analysis: str = None
     dynamic_analysis: str = None
 
@@ -32,8 +35,6 @@ class Issue:
     kb_article_url: str
     background: str = None
     remediation: str = None
-    remediation_detail: str = None
-    remediation_background: str = None
     references: list[str] = field(default_factory=list)
     vulnerability_classifications: list[str] = field(default_factory=list)
     issue_locations: list[IssueLocation] = field(default_factory=list)

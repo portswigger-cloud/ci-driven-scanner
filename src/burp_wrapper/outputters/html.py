@@ -7,14 +7,15 @@ def get_confidence_counts(severity: str, issues: list) -> list[int]:
     confidence_counts = [0, 0, 0]
 
     for issue in issues:
-        if severity == issue.severity.lower():
-            match issue.confidence.lower():
-                case "certain":
-                    confidence_counts[0] += len(issue.issue_locations)
-                case "firm":
-                    confidence_counts[1] += len(issue.issue_locations)
-                case "tentative":
-                    confidence_counts[2] += len(issue.issue_locations)
+        for issue_location in issue.issue_locations:
+            if severity == issue.severity.lower():
+                match issue_location.confidence.lower():
+                    case "certain":
+                        confidence_counts[0] += 1
+                    case "firm":
+                        confidence_counts[1] += 1
+                    case "tentative":
+                        confidence_counts[2] += 1
 
     return confidence_counts
 
@@ -63,11 +64,19 @@ def issue_overview_table(issues: list) -> list:
     sorted_issue_lists: dict[list] = {}
 
     for issue in issues:
-        issue_criticality = f"{issue.severity.lower()}_{issue.confidence.lower()}"
-        _issue_overview[issue_criticality][issue.name] = {
-            "count": len(issue.issue_locations),
-            "kb_article_url": issue.kb_article_url,
-        }
+        for issue_location in issue.issue_locations:
+            issue_criticality = (
+                f"{issue.severity.lower()}_{issue_location.confidence.lower()}"
+            )
+
+            try:
+                _issue_overview[issue_criticality][issue.name]["count"] += 1
+
+            except KeyError:
+                _issue_overview[issue_criticality][issue.name] = {
+                    "count": 1,
+                    "kb_article_url": issue.kb_article_url,
+                }
 
     for issue_criticality in _issue_overview:
         sorted_issue_lists[issue_criticality] = sorted(
@@ -78,6 +87,13 @@ def issue_overview_table(issues: list) -> list:
     return sorted_issue_lists
 
 
+def generate_anchor(input: str):
+    # Accepts a string like: Web Security Academy: SQL injection (https://portswigger.net/web-security/sql-injection)
+    # Should return: <a href="https://portswigger.net/web-security/sql-injection">Web Security Academy: SQL injection</a>
+    link_parts = input[:-1].split("(")
+    return f'<a href="{link_parts[1]}">{link_parts[0]}</a>'
+
+
 def create_report(reports_directory: str, issues: dict) -> None:
     environment = Environment(
         loader=FileSystemLoader(f"{os.path.dirname(__file__)}/templates")
@@ -85,6 +101,7 @@ def create_report(reports_directory: str, issues: dict) -> None:
 
     template = environment.get_template("burp.html")
     template.globals["iso_now"] = datetime.now(timezone.utc).isoformat
+    template.globals["generate_anchor"] = generate_anchor
 
     filename = f"{reports_directory}/burp.html"
 

@@ -522,7 +522,7 @@
             each issue for a typical organization. Issues are also classified according to confidence as
             Certain, Firm
             or Tentative. This reflects the inherent reliability of the technique that was used to identify the
-            issue.</span><br><br>
+            issue.</span><br /><br />
         <table cellpadding="0" cellspacing="0" class="overview_table">
             <tr>
                 <td width="70">&nbsp;</td>
@@ -587,11 +587,12 @@
                 <td class="colour_holder_end"><span class="colour_block row_total">{{
                         severity_confidence_table["total"] }}</span></td>
             </tr>
-        </table><br>
+        </table><br />
+        <div class="rule"></div>
         <h1>Issue Overview</h1>
         <span class="TEXT">The table below shows the numbers of each issue identified witrh the severity and confidence.
             Click on the issue name to find out more from the PortSwigger knowledgebase.
-        </span><br><br>
+        </span><br /><br />
         <table cellpadding="0" cellspacing="0" class="overview_table">
             <tr>
                 <td height="30" class="info">Issue</td>
@@ -615,10 +616,174 @@
             </tr>
             {% endfor %}
             {% endfor %}
-        </table><br>
-
+        </table><br />
+        <div class="rule"></div>
         <h1>Issue Details</h1>
-
+        {% set issue_count = [] %}
+        {% for issue_criticality in issue_overview_table %}
+        {% set outer_loop_first = loop.first %}
+        {% set outer_loop_Last = loop.last %}
+        {% for (issue_name, data) in issue_overview_table[issue_criticality] %}
+        {% set __ = issue_count.append(1) %}
+        {% set inner_loop_first = loop.first %}
+        {% set inner_loop_Last = loop.last %}
+        {% set issue = issues[issue_name] %}
+        <span class="BODH0" id="{{ issue_count|length }}">{{ issue_count|length }}.&nbsp;<a
+                href="{{ data['kb_article_url'] }}">{{ issue_name }}</a></span>
+        <br />
+        {% if not (outer_loop_first and inner_loop_first) %}
+        <a class="PREVNEXT" href="#{{ issue_count|length - 1 }}">Previous</a>&nbsp;
+        {% endif %}
+        {% if not (outer_loop_Last and inner_loop_Last) %}
+        <a class="PREVNEXT" href="#{{ issue_count|length + 1 }}">Next</a>
+        {% endif %}
+        <br />
+        <br />
+        {% if issue.issue_locations|length > 1 %}
+        <span class="TEXT">There are {{ issue.issue_locations|length }} instances of this issue:
+            <ul>
+                {% for issue_location in issue.issue_locations %}
+                <li><a href="#{{ issue_count|length }}.{{ loop.index }}">{{ issue_location.path }}</a></li>
+                {% endfor %}
+            </ul>
+        </span>
+        {% endif %}
+        {% if issue.background %}
+        <h2>Issue background</h2>
+        <span class="TEXT">
+            {% for line in issue.background.split('\n') %}<p>{{ line }}</p>{% endfor %}
+        </span>
+        {% endif %}
+        {% if issue.remediation %}
+        <h2>Issue remediation</h2>
+        <span class="TEXT">
+            {% for line in issue.remediation.split('\n') %}<p>{{ line }}</p>{% endfor %}
+        </span>
+        {% endif %}
+        {% if issue.references %}
+        <h2>References</h2>
+        <span class="TEXT">
+            <ul>
+                {% for reference in issue.references %}<li>{{ generate_anchor(reference) }}</li>{% endfor %}
+            </ul>
+        </span>
+        {% endif %}
+        {% if issue.vulnerability_classifications %}
+        <h2>Vulnerability classifications</h2>
+        <span class="TEXT">
+            <ul>
+                {% for classification in issue.vulnerability_classifications %}<li>{{ generate_anchor(classification) }}
+                </li>{% endfor %}
+            </ul>
+        </span>
+        {% endif %}
+        {% for issue_location in issue.issue_locations %}
+        <br />
+        <div class="rule"></div>
+        <a href="#{{ issue_count|length }}.{{loop.index}}"><span class="BODH1"
+                id="{{ issue_count|length }}.{{loop.index}}">
+                {{issue_count|length}}.{{loop.index}}&nbsp;{{issue_location.host}}{{issue_location.path}}</span></a>
+        <h2>Summary</h2>
+        <table cellpadding="0" cellspacing="0" class="summary_table">
+            <tr>
+                <td rowspan="4" class="icon" valign="top" align="center">
+                    <div class='scan_issue_{{issue.severity.lower()}}_{{issue_location.confidence.lower()}}_rpt'></div>
+                </td>
+                <td>Severity:&nbsp;&nbsp;</td>
+                <td><b>{{issue.severity}}</b></td>
+            </tr>
+            <tr>
+                <td>Confidence:&nbsp;&nbsp;</td>
+                <td><b>{{issue_location.confidence}}</b></td>
+            </tr>
+            <tr>
+                <td>Host:&nbsp;&nbsp;</td>
+                <td><b>{{issue_location.host}}</b></td>
+            </tr>
+            <tr>
+                <td>Path:&nbsp;&nbsp;</td>
+                <td><b>{{issue_location.path}}</b></td>
+            </tr>
+        </table>
+        {% if issue_location.detail %}
+        <h2>Issue detail</h2>
+        <span class="TEXT">
+            {% for line in issue_location.detail.split('\n') %}<p>{{ line }}</p>{% endfor %}
+        </span>
+        {% endif %}
+        {% if issue_location.remediation_detail %}
+        <h2>Remediation detail</h2>
+        <span class="TEXT">
+            {% for line in issue_location.remediation_detail.split('\n') %}<p>{{ line }}</p>{% endfor %}
+        </span>
+        {% endif %}
+        {% if issue_location.remediation_background %}
+        <h2>Remediation background</h2>
+        <span class="TEXT">
+            {% for line in issue_location.remediation_background.split('\n') %}<p>{{ line }}</p>{% endfor %}
+        </span>
+        {% endif %}
+        {% if issue_location.evidence %}
+        <h2>Evidence</h2>
+        {% for proof in issue_location.evidence %}
+        <h2>Request #{{loop.index}}</h2>
+        <div class="rr_div">
+            <pre>
+{{proof.request|e}}
+            </pre>
+        </div>
+        <h2>Response #{{loop.index}}</h2>
+        <div class="rr_div">
+            <pre>
+{{proof.response|e}}
+            </pre>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% if issue_location.collaborator_http_interaction %}
+        <h2>Collaborator HTTP interaction</h2>
+        <span class="TEXT">
+            {% for line in issue_location.collaborator_http_interaction.message.split('\n') %}<p>{{ line }}</p>{% endfor
+            %}
+        </span>
+        <h2>Request</h2>
+        <div class="rr_div">
+            <pre>
+{{issue_location.collaborator_http_interaction.evidence.request|e}}
+            </pre>
+        </div>
+        <h2>Response</h2>
+        <div class="rr_div">
+            <pre>
+{{issue_location.collaborator_http_interaction.evidence.response|e}}
+            </pre>
+        </div>
+        {% endif %}
+        {% if issue_location.collaborator_dns_interaction %}
+        <h2>Collaborator DNS interaction</h2>
+        <span class="TEXT">
+            {% for line in issue_location.collaborator_dns_interaction.split('\n') %}<p>{{ line }}</p>{% endfor
+            %}
+        </span>
+        {% endif %}
+        {% if issue_location.static_analysis %}
+        <h2>Static analysis</h2>
+        <span class="TEXT">
+            {% for line in issue_location.static_analysis.split('\n') %}<p>{{ line|e }}</p>{% endfor
+            %}
+        </span>
+        {% endif %}
+        {% if issue_location.dynamic_analysis %}
+        <h2>Dynamic analysis</h2>
+        <span class="TEXT">
+            {% for line in issue_location.dynamic_analysis.split('\n') %}<p>{{ line|e }}</p>{% endfor
+            %}
+        </span>
+        {% endif %}
+        {% endfor %}
+        <br />
+        {% endfor %}
+        {% endfor %}
     </div>
 </body>
 

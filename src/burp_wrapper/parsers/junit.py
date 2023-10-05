@@ -6,7 +6,12 @@ from junitparser import JUnitXml
 
 import burp_wrapper.issue_definition_metadata as i_def
 
-from burp_wrapper.models import CollaboratorInteraction, Evidence, Issue, IssueLocation
+from burp_wrapper.models import (
+    CollaboratorHttpInteraction,
+    Evidence,
+    Issue,
+    IssueLocation,
+)
 
 
 def parse_issues_from_junit(junit_file_path: str) -> list[Issue]:
@@ -40,18 +45,6 @@ def parse_issues_from_junit(junit_file_path: str) -> list[Issue]:
                         if remediation:
                             issue.remediation = remediation
 
-                        remediation_detail = parse_message_for_field(
-                            "Remediation Detail", result.text
-                        )
-                        if remediation_detail:
-                            issue.remediation_detail = remediation_detail
-
-                        remediation_background = parse_message_for_field(
-                            "Remediation Background", result.text
-                        )
-                        if remediation_background:
-                            issue.remediation_background = remediation_background
-
                         references = parse_message_for_field("References", result.text)
                         if references:
                             issue.references = references
@@ -79,25 +72,45 @@ def parse_issues_from_junit(junit_file_path: str) -> list[Issue]:
                     if evidence:
                         issue_location.evidence = evidence
 
-                    collaborator_interaction = parse_message_for_field(
-                        "Collaborator HTTP interaction", result.text
+                    collaborator_http_interaction = parse_message_for_field(
+                        "Collaborator HTTP interaction:", result.text
                     )
-                    if collaborator_interaction:
-                        issue_location.collaborator_interaction = (
-                            collaborator_interaction
+                    if collaborator_http_interaction:
+                        issue_location.collaborator_http_interaction = (
+                            collaborator_http_interaction
+                        )
+
+                    collaborator_dns_interaction = parse_message_for_field(
+                        "Collaborator DNS interaction:", result.text
+                    )
+                    if collaborator_dns_interaction:
+                        issue_location.collaborator_dns_interaction = (
+                            collaborator_dns_interaction
                         )
 
                     static_analysis = parse_message_for_field(
-                        "Static analysis", result.text
+                        "Static analysis:", result.text
                     )
                     if static_analysis:
                         issue_location.static_analysis = static_analysis
 
                     dynamic_analysis = parse_message_for_field(
-                        "Dynamic analysis", result.text
+                        "Dynamic analysis:", result.text
                     )
                     if dynamic_analysis:
                         issue_location.dynamic_analysis = dynamic_analysis
+
+                    remediation_detail = parse_message_for_field(
+                        "Remediation Detail", result.text
+                    )
+                    if remediation_detail:
+                        issue_location.remediation_detail = remediation_detail
+
+                    remediation_background = parse_message_for_field(
+                        "Remediation Background", result.text
+                    )
+                    if remediation_background:
+                        issue_location.remediation_background = remediation_background
 
                     issue.issue_locations.append(issue_location)
 
@@ -109,7 +122,9 @@ def parse_message_for_field(field: str, message: str):
         "inline": ["Severity", "Confidence", "Host", "Path"],
         "list": ["References", "Vulnerability Classifications"],
         "evidence": ["Evidence"],
-        "collaborator_interaction": ["Collaborator HTTP interaction"],
+        "collaborator_interaction": [
+            "Collaborator HTTP interaction:",
+        ],
         "multiline": [
             "Issue Detail",
             "Issue Background",
@@ -118,6 +133,7 @@ def parse_message_for_field(field: str, message: str):
             "Remediation Background",
             "Static analysis:",
             "Dynamic analysis:",
+            "Collaborator DNS interaction:",
         ],
         "footer": [
             "Reported by Burp Suite Enterprise: https://portswigger.net/kb/issues"
@@ -184,7 +200,7 @@ def parse_message_for_field(field: str, message: str):
                 if request:
                     request_list.append(evidence_line)
 
-                elif response:
+                elif response and evidence_line not in all_fields:
                     response_list.append(evidence_line)
 
             request_str = "\n".join(request_list).strip()
@@ -251,12 +267,9 @@ def parse_message_for_field(field: str, message: str):
                 collaborator_interaction_response_list
             ).strip()
 
-            if (
-                collaborator_interaction_message_str
-                and collaborator_interaction_request_str
-                and collaborator_interaction_response_str
-            ):
-                return CollaboratorInteraction(
+            if collaborator_interaction_message_str:
+                print(collaborator_interaction_message_str)
+                return CollaboratorHttpInteraction(
                     message=collaborator_interaction_message_str,
                     evidence=Evidence(
                         request=collaborator_interaction_request_str,
