@@ -1,4 +1,4 @@
-ARG IMAGE_TAG=2023.7-12901
+ARG IMAGE_TAG=2023.9-14019
 
 FROM public.ecr.aws/portswigger/enterprise-scan-container:${IMAGE_TAG}
 

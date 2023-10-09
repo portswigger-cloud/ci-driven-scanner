@@ -629,7 +629,7 @@
         {% set inner_loop_Last = loop.last %}
         {% set issue = issues[issue_name] %}
         <span class="BODH0" id="{{ issue_count|length }}">{{ issue_count|length }}.&nbsp;<a
-                href="{{ data['kb_article_url'] }}">{{ issue_name }}</a></span>
+                href="{{ data['kb_article_url'] }}">{{ issue_name|e }}</a></span>
         <br />
         {% if not (outer_loop_first and inner_loop_first) %}
         <a class="PREVNEXT" href="#{{ issue_count|length - 1 }}">Previous</a>&nbsp;
@@ -643,7 +643,7 @@
         <span class="TEXT">There are {{ issue.issue_locations|length }} instances of this issue:
             <ul>
                 {% for issue_location in issue.issue_locations %}
-                <li><a href="#{{ issue_count|length }}.{{ loop.index }}">{{ issue_location.path }}</a></li>
+                <li><a href="#{{ issue_count|length }}.{{ loop.index }}">{{ issue_location.path|e }}</a></li>
                 {% endfor %}
             </ul>
         </span>
@@ -651,20 +651,20 @@
         {% if issue.background %}
         <h2>Issue background</h2>
         <span class="TEXT">
-            {% for line in issue.background.split('\n') %}<p>{{ line }}</p>{% endfor %}
+            {% for line in issue.background.split('\n') %}<p>{{ line|e }}</p>{% endfor %}
         </span>
         {% endif %}
         {% if issue.remediation %}
         <h2>Issue remediation</h2>
         <span class="TEXT">
-            {% for line in issue.remediation.split('\n') %}<p>{{ line }}</p>{% endfor %}
+            {% for line in issue.remediation.split('\n') %}<p>{{ line|e }}</p>{% endfor %}
         </span>
         {% endif %}
         {% if issue.references %}
         <h2>References</h2>
         <span class="TEXT">
             <ul>
-                {% for reference in issue.references %}<li>{{ generate_anchor(reference) }}</li>{% endfor %}
+                {% for reference in issue.references %}<li>{{ generate_anchor(reference)|safe }}</li>{% endfor %}
             </ul>
         </span>
         {% endif %}
@@ -672,7 +672,8 @@
         <h2>Vulnerability classifications</h2>
         <span class="TEXT">
             <ul>
-                {% for classification in issue.vulnerability_classifications %}<li>{{ generate_anchor(classification) }}
+                {% for classification in issue.vulnerability_classifications %}<li>{{
+                    generate_anchor(classification)|safe }}
                 </li>{% endfor %}
             </ul>
         </span>
